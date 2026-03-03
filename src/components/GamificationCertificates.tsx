@@ -12,6 +12,7 @@ import {
   Flame, FileText, FolderOpen, Lock, ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { triggerHaptic, triggerNotificationHaptic } from '@/utils/haptics';
 import { loadTodoItems } from '@/utils/todoItemsStorage';
@@ -777,44 +778,78 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
 
         {/* Stats summary */}
         <div style={{ width: '100%' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
             <CertStat value={`${cert.requirements.tasksCompleted}+`} label="Tasks" accent={cert.colors.accent} />
             <CertStat value={`${cert.requirements.streakDays}d`} label="Streak" accent={cert.colors.accent} />
             <CertStat value={`${cert.requirements.notesCreated}+`} label="Notes" accent={cert.colors.accent} />
+          </div>
+
+          {/* Tasks in Days highlight */}
+          <div style={{
+            textAlign: 'center', marginBottom: '16px', padding: '8px 12px',
+            borderRadius: '8px', background: `${cert.colors.accent}12`,
+            border: `1px solid ${cert.colors.accent}20`,
+          }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: cert.colors.accent }}>
+              {cert.requirements.tasksCompleted}+ Tasks Completed in {cert.requirements.streakDays}+ Days
+            </p>
+          </div>
+
+          {/* QR Code + Branding */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{
+              background: '#ffffff', borderRadius: 6, padding: 4,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <QRCodeSVG
+                value="https://play.google.com/store/apps/details?id=nota.npd.com"
+                size={48}
+                level="M"
+                bgColor="#ffffff"
+                fgColor="#000000"
+              />
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div
+                data-export-brand-row="true"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  marginBottom: '3px',
+                  minHeight: '16px',
+                }}
+              >
+                <img src={npdLogo} alt="Npd" style={{ width: 13, height: 13, borderRadius: 3 }} crossOrigin="anonymous" />
+                <span
+                  data-export-brand-name="true"
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 600,
+                    color: cert.colors.text,
+                    opacity: 0.7,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    height: '16px',
+                    lineHeight: '16px',
+                    marginTop: '-1px',
+                    transform: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Npd — Notes. Planner. Diary.
+                </span>
+              </div>
+              <p style={{ color: cert.colors.text, fontSize: 7, opacity: 0.45, margin: 0 }}>
+                Scan to download the app
+              </p>
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <p style={{ fontSize: '9px', color: cert.colors.text }}>
               {unlocked ? dateStr : 'Not yet achieved'}
             </p>
-            <div
-              data-export-brand-row="true"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                minHeight: '16px',
-              }}
-            >
-              <span
-                data-export-brand-name="true"
-                style={{
-                  fontSize: '9px',
-                  fontWeight: 700,
-                  letterSpacing: '0.05em',
-                  color: cert.colors.text,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  height: '16px',
-                  lineHeight: '16px',
-                  marginTop: '-1px',
-                  transform: 'none',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                Npd
-              </span>
-            </div>
           </div>
         </div>
       </div>
