@@ -474,9 +474,12 @@ const JourneyBadges = () => {
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => setEditingName(true)} className="flex items-center gap-1.5 mx-auto text-sm text-foreground/80 hover:text-foreground transition-colors">
-                      <span className="font-semibold">{badgeName || 'Add your name'}</span>
-                      <Edit3 className="h-3 w-3 text-muted-foreground" />
+                    <button onClick={() => setEditingName(true)} className="flex flex-col items-center gap-1 mx-auto text-sm text-foreground/80 hover:text-foreground transition-colors">
+                      <span className="font-semibold flex items-center gap-1.5">
+                        {badgeName || 'Add your name'}
+                        <Edit3 className="h-3 w-3 text-muted-foreground" />
+                      </span>
+                      {badgeName && <div className="w-16 h-0.5 rounded-full bg-primary/40" />}
                     </button>
                   )}
                 </div>
