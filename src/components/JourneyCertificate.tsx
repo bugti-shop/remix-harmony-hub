@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, Copy, Check } from 'lucide-react';
+import Confetti from 'react-confetti';
 import { Journey, JourneyProgress } from '@/utils/virtualJourneyStorage';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { triggerHaptic } from '@/utils/haptics';
@@ -65,6 +66,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
   const cardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
+  const [shareConfetti, setShareConfetti] = useState(false);
   const [cardName, setCardName] = useState(profile.name || '');
 
   const colors = JOURNEY_COLORS[journey.id] || JOURNEY_COLORS.nile;
@@ -124,6 +126,8 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
         text: getLinkedInText(journey, displayName),
         dialogTitle: 'Share Journey Certificate',
       });
+      setShareConfetti(true);
+      setTimeout(() => setShareConfetti(false), 3500);
     } catch (e) {
       console.error('[JourneyCert] Share failed:', e);
     } finally {
@@ -141,6 +145,17 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md overflow-y-auto"
       >
+        {/* Share confetti */}
+        {shareConfetti && (
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+            numberOfPieces={250}
+            gravity={0.3}
+            style={{ position: 'fixed', top: 0, left: 0, zIndex: 60 }}
+          />
+        )}
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] flex items-center justify-between">
           <h2 className="text-lg font-bold">Journey Certificate</h2>
@@ -302,7 +317,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               }}>
                 <QRCodeSVG
                   value="https://play.google.com/store/apps/details?id=nota.npd.com"
-                  size={52}
+                  size={64}
                   level="M"
                   bgColor="#ffffff"
                   fgColor="#000000"
@@ -311,8 +326,8 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               <div style={{ textAlign: 'left' }}>
                 <div data-export-brand-row="true" style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
                   <img src={npdLogo} alt="Npd" style={{ width: 13, height: 13, borderRadius: 3 }} crossOrigin="anonymous" />
-                  <span data-export-brand-name="true" style={{ color: colors.text, fontSize: 9, fontWeight: 600, opacity: 0.7 }}>
-                    Npd — Notes. Planner. Diary.
+                  <span data-export-brand-name="true" style={{ color: '#000000', fontSize: 10, fontWeight: 600 }}>
+                    Npd: Notepad & To Do List
                   </span>
                 </div>
                 <p style={{ color: colors.text, fontSize: 7, opacity: 0.45, margin: 0 }}>
