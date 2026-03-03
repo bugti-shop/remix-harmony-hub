@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Shield, Sparkles, Star, Trophy, Crown, Share2, Edit3, Check } from 'lucide-react';
+import { Award, Share2, Edit3, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TodoLayout } from './TodoLayout';
 import {
@@ -19,64 +19,9 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { shareImageBlob } from '@/utils/shareImage';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
+import { MedalBadge, MEDAL_COLORS, RarityIcon } from '@/components/MedalBadge';
 
 const RARITY_ORDER: BadgeRarity[] = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
-
-const RarityIcon = ({ rarity }: { rarity: BadgeRarity }) => {
-  const size = 'h-3.5 w-3.5';
-  switch (rarity) {
-    case 'legendary': return <Crown className={cn(size, 'text-warning')} />;
-    case 'epic': return <Sparkles className={cn(size, 'text-primary')} />;
-    case 'rare': return <Star className={cn(size, 'text-primary')} />;
-    case 'uncommon': return <Shield className={cn(size, 'text-success')} />;
-    default: return <Award className={cn(size, 'text-muted-foreground')} />;
-  }
-};
-
-// Medal-style badge colors inspired by rarity
-const MEDAL_COLORS: Record<BadgeRarity, { ring: string; bg: string; ribbon: string; inner: string; text: string }> = {
-  legendary: { ring: 'from-yellow-400 via-amber-500 to-yellow-600', bg: 'bg-gradient-to-br from-yellow-500/20 to-amber-600/20', ribbon: 'bg-gradient-to-b from-amber-500 to-amber-700', inner: 'bg-gradient-to-br from-slate-800 to-slate-900', text: 'text-amber-400' },
-  epic: { ring: 'from-purple-400 via-violet-500 to-purple-600', bg: 'bg-gradient-to-br from-purple-500/20 to-violet-600/20', ribbon: 'bg-gradient-to-b from-violet-500 to-violet-700', inner: 'bg-gradient-to-br from-slate-800 to-slate-900', text: 'text-violet-400' },
-  rare: { ring: 'from-blue-400 via-cyan-500 to-blue-600', bg: 'bg-gradient-to-br from-blue-500/20 to-cyan-600/20', ribbon: 'bg-gradient-to-b from-blue-500 to-blue-700', inner: 'bg-gradient-to-br from-slate-800 to-slate-900', text: 'text-blue-400' },
-  uncommon: { ring: 'from-emerald-400 via-green-500 to-emerald-600', bg: 'bg-gradient-to-br from-emerald-500/20 to-green-600/20', ribbon: 'bg-gradient-to-b from-emerald-500 to-emerald-700', inner: 'bg-gradient-to-br from-slate-800 to-slate-900', text: 'text-emerald-400' },
-  common: { ring: 'from-zinc-300 via-zinc-400 to-zinc-500', bg: 'bg-gradient-to-br from-zinc-400/20 to-zinc-500/20', ribbon: 'bg-gradient-to-b from-zinc-400 to-zinc-600', inner: 'bg-gradient-to-br from-slate-800 to-slate-900', text: 'text-zinc-300' },
-};
-
-// Medal badge component - looks like the gold/navy award badge
-const MedalBadge = ({ badge, size = 'md', userName }: { badge: JourneyBadge; size?: 'sm' | 'md' | 'lg'; userName?: string }) => {
-  const medal = MEDAL_COLORS[badge.rarity];
-  const dims = size === 'lg' ? 'w-40 h-40' : size === 'md' ? 'w-20 h-20' : 'w-14 h-14';
-  const iconSize = size === 'lg' ? 'text-5xl' : size === 'md' ? 'text-2xl' : 'text-lg';
-  const ribbonW = size === 'lg' ? 'w-6' : size === 'md' ? 'w-3' : 'w-2';
-  const ribbonH = size === 'lg' ? 'h-8' : size === 'md' ? 'h-4' : 'h-3';
-
-  return (
-    <div className="flex flex-col items-center">
-      {/* Medal */}
-      <div className="relative">
-        {/* Ribbon tails */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-0">
-          <div className={cn(ribbonW, ribbonH, medal.ribbon, 'rounded-b-sm -rotate-12')} />
-          <div className={cn(ribbonW, ribbonH, medal.ribbon, 'rounded-b-sm rotate-12')} />
-        </div>
-        {/* Outer ring (gold/colored) */}
-        <div className={cn(dims, 'rounded-full p-[3px] bg-gradient-to-br relative z-10', medal.ring)}>
-          {/* Scalloped edge effect */}
-          <div className="w-full h-full rounded-full p-[3px] bg-gradient-to-br from-white/20 to-transparent">
-            {/* Inner dark circle */}
-            <div className={cn('w-full h-full rounded-full flex items-center justify-center', medal.inner)}>
-              <span className={iconSize}>{badge.icon}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Name on medal */}
-      {userName && size === 'lg' && (
-        <p className={cn('text-xs font-bold mt-3 tracking-wide', medal.text)}>{userName}</p>
-      )}
-    </div>
-  );
-};
 
 const JourneyBadges = () => {
   const [data, setData] = useState<VirtualJourneyData | null>(null);
