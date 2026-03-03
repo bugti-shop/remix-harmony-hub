@@ -229,7 +229,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
             {displayName && (
               <div data-export-profile-row="true" style={{ textAlign: 'center', marginBottom: 16 }}>
                 <p style={{ color: colors.text, fontSize: 9, opacity: 0.6, marginBottom: 2 }}>Awarded to</p>
-                <p data-export-profile-name="true" style={{ color: '#ffffff', fontSize: 16, fontWeight: 700 }}>
+                <p data-export-profile-name="true" style={{ color: '#ffffff', fontSize: 16, fontWeight: 700, display: 'inline-block', paddingBottom: 4, borderBottom: `2px solid ${colors.accent}80` }}>
                   {displayName}
                 </p>
               </div>
