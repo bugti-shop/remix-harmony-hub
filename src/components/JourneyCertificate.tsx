@@ -302,7 +302,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
                   {/* Milestone info */}
                   <div style={{ paddingLeft: 6 }}>
                     <p style={{ color: '#ffffff', fontSize: 11, fontWeight: 700, margin: 0, lineHeight: 1.3 }}>
-                      {ms.name}
+                      {ms.name} <span style={{ color: colors.accent, fontWeight: 600, fontSize: 10 }}>({ms.tasksRequired} tasks)</span>
                     </p>
                     <p style={{ color: colors.text, fontSize: 8, margin: 0, opacity: 0.7 }}>
                       {ms.description}
