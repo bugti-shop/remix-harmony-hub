@@ -346,17 +346,40 @@ const JourneyBadges = () => {
                         isNewlyEarned && 'ring-2 ring-warning/50'
                       )}
                     >
+                      {/* Shimmer sweep for legendary/epic */}
+                      {(badge.rarity === 'legendary' || badge.rarity === 'epic') && (
+                        <motion.div
+                          className="absolute inset-0 z-0 pointer-events-none"
+                          style={{
+                            background: badge.rarity === 'legendary'
+                              ? 'linear-gradient(105deg, transparent 40%, rgba(251,191,36,0.15) 45%, rgba(251,191,36,0.25) 50%, rgba(251,191,36,0.15) 55%, transparent 60%)'
+                              : 'linear-gradient(105deg, transparent 40%, rgba(167,139,250,0.15) 45%, rgba(167,139,250,0.25) 50%, rgba(167,139,250,0.15) 55%, transparent 60%)',
+                            backgroundSize: '200% 100%',
+                          }}
+                          animate={{ backgroundPosition: ['200% 0', '-200% 0'] }}
+                          transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: 'easeInOut' }}
+                        />
+                      )}
+                      {/* Subtle glow border for legendary */}
+                      {badge.rarity === 'legendary' && (
+                        <motion.div
+                          className="absolute inset-0 rounded-2xl pointer-events-none z-0"
+                          style={{ boxShadow: '0 0 12px 2px rgba(251,191,36,0.15), inset 0 0 8px 1px rgba(251,191,36,0.08)' }}
+                          animate={{ opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                        />
+                      )}
                       {/* Medal */}
-                      <div className="flex justify-center mb-2.5">
+                      <div className="flex justify-center mb-2.5 relative z-10">
                         <MedalBadge badge={badge} size="md" />
                       </div>
-                      <p className="font-bold text-xs text-foreground truncate">{badge.label}</p>
-                      <div className={cn('flex items-center justify-center gap-1 mt-1 text-[9px] font-bold', config.color)}>
+                      <p className="font-bold text-xs text-foreground truncate relative z-10">{badge.label}</p>
+                      <div className={cn('flex items-center justify-center gap-1 mt-1 text-[9px] font-bold relative z-10', config.color)}>
                         <RarityIcon rarity={badge.rarity} />
                         {config.label}
                       </div>
                       {badge.earnedAt && (
-                        <p className="text-[9px] text-muted-foreground/60 mt-1.5">{format(new Date(badge.earnedAt), 'MMM d, yyyy')}</p>
+                        <p className="text-[9px] text-muted-foreground/60 mt-1.5 relative z-10">{format(new Date(badge.earnedAt), 'MMM d, yyyy')}</p>
                       )}
                     </motion.button>
                   );
