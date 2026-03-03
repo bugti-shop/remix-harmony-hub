@@ -3,27 +3,57 @@ import { advanceJourney, getActiveJourney, getRarityFromJourney } from '@/utils/
 import { playAchievementSound } from '@/utils/gamificationSounds';
 import { toast } from '@/hooks/use-toast';
 import { BadgeUnlockToast } from '@/components/BadgeUnlockToast';
+import { loadTodoItems } from '@/utils/todoItemsStorage';
+import { TodoItem } from '@/types/note';
 
 /**
- * Global hook that listens for task completions and advances the active journey.
- * Must be mounted once at the App level so it works regardless of which page the user is on.
- * Uses debounce to prevent double-counting when multiple tasksUpdated events fire rapidly.
+ * Global hook that listens for task updates and advances the active journey
+ * only when the actual number of completed tasks increases.
  */
 export const useJourneyAdvancement = () => {
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastCompletedCountRef = useRef<number | null>(null);
+  const isProcessingRef = useRef(false);
+
+  const countCompletedTasks = (items: TodoItem[]): number => {
+    const walk = (list: TodoItem[]): number =>
+      list.reduce((sum, item) => {
+        const self = item.completed ? 1 : 0;
+        const nested = item.subtasks?.length ? walk(item.subtasks) : 0;
+        return sum + self + nested;
+      }, 0);
+
+    return walk(items);
+  };
 
   useEffect(() => {
-    const handler = () => {
-      // Debounce: only process one advancement per 1s window
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        const active = getActiveJourney();
-        if (!active || active.progress.completedAt) return;
+    const syncAndAdvance = async () => {
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
 
-        const result = advanceJourney();
-        if (result.newMilestone || result.journeyCompleted) {
+      try {
+        const items = await loadTodoItems();
+        const completedCount = countCompletedTasks(items);
+
+        // First sync: establish baseline without awarding progress
+        if (lastCompletedCountRef.current === null) {
+          lastCompletedCountRef.current = completedCount;
+          return;
+        }
+
+        const delta = completedCount - lastCompletedCountRef.current;
+        lastCompletedCountRef.current = completedCount;
+
+        if (delta <= 0) return;
+
+        for (let i = 0; i < delta; i++) {
+          const active = getActiveJourney();
+          if (!active || active.progress.completedAt) break;
+
+          const result = advanceJourney();
+          if (!result.newMilestone && !result.journeyCompleted) continue;
+
           playAchievementSound();
-
           const journey = active.journey;
 
           if (result.journeyCompleted) {
@@ -39,7 +69,7 @@ export const useJourneyAdvancement = () => {
               duration: 5000,
             });
           } else if (result.newMilestone) {
-            const msIndex = journey.milestones.findIndex(m => m.id === result.newMilestone!.id);
+            const msIndex = journey.milestones.findIndex((m) => m.id === result.newMilestone!.id);
             const rarity = getRarityFromJourney(journey, 'milestone', msIndex);
             toast({
               description: BadgeUnlockToast({
@@ -58,10 +88,23 @@ export const useJourneyAdvancement = () => {
             })
           );
         }
-      }, 600);
+      } finally {
+        isProcessingRef.current = false;
+      }
+    };
+
+    // Initialize baseline once
+    void syncAndAdvance();
+
+    const handler = () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        void syncAndAdvance();
+      }, 250);
     };
 
     window.addEventListener('tasksUpdated', handler);
+
     return () => {
       window.removeEventListener('tasksUpdated', handler);
       if (debounceRef.current) clearTimeout(debounceRef.current);
