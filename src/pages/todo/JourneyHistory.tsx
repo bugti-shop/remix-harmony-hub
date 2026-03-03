@@ -118,7 +118,13 @@ const JourneyHistory = () => {
           <div className="space-y-3">
             {journeysWithProgress.map(({ journey, progress }, index) => {
               const isComplete = !!progress.completedAt;
-              const percent = Math.min((progress.tasksCompleted / journey.totalTasks) * 100, 100);
+              const totalJourneyTasks = journey.milestones.reduce((sum, ms) => sum + ms.tasksRequired, 0);
+              const totalDone = journey.milestones.reduce((sum, ms, i) => {
+                if (i < (progress.currentMilestoneIndex ?? 0)) return sum + ms.tasksRequired;
+                if (i === (progress.currentMilestoneIndex ?? 0)) return sum + (progress.currentMilestoneTasks ?? 0);
+                return sum;
+              }, 0);
+              const percent = Math.min((totalDone / totalJourneyTasks) * 100, 100);
               const milestonesReached = progress.milestonesReached.length;
 
               return (
@@ -175,7 +181,7 @@ const JourneyHistory = () => {
                       <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <MapPin className="h-2.5 w-2.5" />
-                          {progress.tasksCompleted}/{journey.totalTasks} tasks
+                          {totalDone}/{totalJourneyTasks} tasks
                         </span>
                         <span>{milestonesReached}/{journey.milestones.length} milestones</span>
                         {progress.completedAt && (

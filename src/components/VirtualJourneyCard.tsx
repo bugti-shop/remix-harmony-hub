@@ -82,11 +82,19 @@ export const VirtualJourneyCard = () => {
   // Progress card for active journey
   if (active) {
     const { journey, progress } = active;
-    const percent = Math.min((progress.tasksCompleted / journey.totalTasks) * 100, 100);
+    // Total tasks = sum of all milestone requirements (each independent)
+    const totalJourneyTasks = journey.milestones.reduce((sum, ms) => sum + ms.tasksRequired, 0);
+    const totalDone = journey.milestones.reduce((sum, ms, i) => {
+      if (i < (progress.currentMilestoneIndex ?? 0)) return sum + ms.tasksRequired;
+      if (i === (progress.currentMilestoneIndex ?? 0)) return sum + (progress.currentMilestoneTasks ?? 0);
+      return sum;
+    }, 0);
+    const percent = Math.min((totalDone / totalJourneyTasks) * 100, 100);
     const isComplete = !!progress.completedAt;
 
     // Find current segment
-    const nextMilestone = journey.milestones.find(m => !progress.milestonesReached.includes(m.id));
+    const currentMsIndex = progress.currentMilestoneIndex ?? 0;
+    const nextMilestone = currentMsIndex < journey.milestones.length ? journey.milestones[currentMsIndex] : undefined;
     const lastReached = [...journey.milestones].reverse().find(m => progress.milestonesReached.includes(m.id));
 
     return (
@@ -155,7 +163,7 @@ export const VirtualJourneyCard = () => {
               <div>
                 <h3 className="font-bold text-sm">{journey.name}</h3>
                 <p className="text-xs text-muted-foreground">
-                  {progress.tasksCompleted}/{journey.totalTasks} tasks
+                  {totalDone}/{totalJourneyTasks} tasks
                 </p>
               </div>
             </div>
@@ -202,8 +210,10 @@ export const VirtualJourneyCard = () => {
 
             {/* Milestone dots on progress bar */}
             <div className="absolute top-0 left-0 right-0 h-3 flex items-center">
-              {journey.milestones.map((ms) => {
-                const msPercent = (ms.tasksRequired / journey.totalTasks) * 100;
+              {journey.milestones.map((ms, i) => {
+                // Milestone positions based on cumulative sum of independent tasks
+                const cumulative = journey.milestones.slice(0, i + 1).reduce((s, m) => s + m.tasksRequired, 0);
+                const msPercent = (cumulative / totalJourneyTasks) * 100;
                 const reached = progress.milestonesReached.includes(ms.id);
                 return (
                   <div
@@ -235,7 +245,7 @@ export const VirtualJourneyCard = () => {
               {isComplete
                 ? '🏆 Journey Complete!'
                 : nextMilestone
-                  ? `Next: ${nextMilestone.name} (${nextMilestone.tasksRequired - progress.tasksCompleted} tasks away)`
+                  ? `Next: ${nextMilestone.name} (${nextMilestone.tasksRequired - (progress.currentMilestoneTasks ?? 0)} tasks away)`
                   : lastReached?.name || 'Starting point'}
             </span>
           </div>
@@ -244,14 +254,15 @@ export const VirtualJourneyCard = () => {
           <div className="mt-4 space-y-1.5">
             {journey.milestones.map((ms, i) => {
               const reached = progress.milestonesReached.includes(ms.id);
-              const isNext = ms.id === nextMilestone?.id;
+              const isCurrent = i === (progress.currentMilestoneIndex ?? 0) && !isComplete;
+              const currentTasks = isCurrent ? (progress.currentMilestoneTasks ?? 0) : reached ? ms.tasksRequired : 0;
               return (
                 <div
                   key={ms.id}
                   className={cn(
                     "flex items-center gap-2.5 py-1.5 px-2 rounded-lg text-xs transition-all",
                     reached && "bg-success/10",
-                    isNext && "bg-primary/10 border border-primary/20"
+                    isCurrent && "bg-primary/10 border border-primary/20"
                   )}
                 >
                   <span className={cn(
@@ -267,7 +278,7 @@ export const VirtualJourneyCard = () => {
                     {ms.name}
                   </span>
                   <span className="text-muted-foreground text-[10px]">
-                    {ms.tasksRequired} tasks
+                    {currentTasks}/{ms.tasksRequired} tasks
                   </span>
                   {reached && <span className="text-success text-xs">✓</span>}
                 </div>

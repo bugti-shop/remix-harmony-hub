@@ -20,7 +20,9 @@ export interface Journey {
 
 export interface JourneyProgress {
   journeyId: string;
-  tasksCompleted: number;
+  tasksCompleted: number; // total tasks across all milestones (for stats)
+  currentMilestoneIndex: number; // which milestone the user is working on
+  currentMilestoneTasks: number; // tasks completed toward current milestone
   startedAt: string;
   completedAt?: string;
   milestonesReached: string[];
@@ -189,6 +191,8 @@ export const startJourney = (journeyId: string): VirtualJourneyData => {
     data.journeyProgress[journeyId] = {
       journeyId,
       tasksCompleted: 0,
+      currentMilestoneIndex: 0,
+      currentMilestoneTasks: 0,
       startedAt: new Date().toISOString(),
       milestonesReached: [],
     };
@@ -207,23 +211,34 @@ export const advanceJourney = (): { newMilestone?: JourneyMilestone; journeyComp
   const progress = data.journeyProgress[data.activeJourneyId];
   if (!progress || progress.completedAt) return {};
 
+  // Initialize new fields for old data
+  if (progress.currentMilestoneIndex === undefined) progress.currentMilestoneIndex = 0;
+  if (progress.currentMilestoneTasks === undefined) progress.currentMilestoneTasks = 0;
+
   progress.tasksCompleted += 1;
+  progress.currentMilestoneTasks += 1;
   data.totalTasksEver += 1;
 
-  // Check for new milestones
+  // Check if current milestone is completed
   let newMilestone: JourneyMilestone | undefined;
   if (!progress.milestonesReachedAt) progress.milestonesReachedAt = {};
-  for (const ms of journey.milestones) {
-    if (progress.tasksCompleted >= ms.tasksRequired && !progress.milestonesReached.includes(ms.id)) {
-      progress.milestonesReached.push(ms.id);
-      progress.milestonesReachedAt[ms.id] = new Date().toISOString();
-      newMilestone = ms;
+
+  const currentMs = journey.milestones[progress.currentMilestoneIndex];
+  if (currentMs && progress.currentMilestoneTasks >= currentMs.tasksRequired) {
+    // Milestone reached!
+    if (!progress.milestonesReached.includes(currentMs.id)) {
+      progress.milestonesReached.push(currentMs.id);
+      progress.milestonesReachedAt[currentMs.id] = new Date().toISOString();
+      newMilestone = currentMs;
     }
+    // Move to next milestone and reset counter
+    progress.currentMilestoneIndex += 1;
+    progress.currentMilestoneTasks = 0;
   }
 
-  // Check journey completion
+  // Check journey completion (all milestones done)
   let journeyCompleted = false;
-  if (progress.tasksCompleted >= journey.totalTasks) {
+  if (progress.currentMilestoneIndex >= journey.milestones.length) {
     progress.completedAt = new Date().toISOString();
     if (!data.completedJourneys.includes(journey.id)) {
       data.completedJourneys.push(journey.id);
