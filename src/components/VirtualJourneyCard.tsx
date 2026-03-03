@@ -10,7 +10,6 @@ import {
   JourneyMilestone,
   loadJourneyData,
   startJourney,
-  advanceJourney,
   getActiveJourney,
   abandonJourney,
   VirtualJourneyData,
@@ -38,25 +37,27 @@ export const VirtualJourneyCard = () => {
   useEffect(() => {
     reload();
 
-    const handler = () => {
-      const active = getActiveJourney();
-      if (active && !active.progress.completedAt) {
-        const result = advanceJourney();
-        if (result.newMilestone || result.journeyCompleted) {
-          setCelebration({ milestone: result.newMilestone, completed: result.journeyCompleted });
-          playAchievementSound();
-          if (result.journeyCompleted) {
-            setTimeout(() => { setCelebration(null); setShowCertificate(true); }, 4000);
-          } else {
-            setTimeout(() => setCelebration(null), 4000);
-          }
-        }
+    // Listen for milestone events dispatched by the global useJourneyAdvancement hook
+    const milestoneHandler = (e: CustomEvent<{ milestone?: JourneyMilestone; completed?: boolean }>) => {
+      const { milestone, completed } = e.detail;
+      setCelebration({ milestone, completed });
+      if (completed) {
+        setTimeout(() => { setCelebration(null); setShowCertificate(true); }, 4000);
+      } else {
+        setTimeout(() => setCelebration(null), 4000);
       }
       reload();
     };
 
-    window.addEventListener('tasksUpdated', handler);
-    return () => window.removeEventListener('tasksUpdated', handler);
+    // Also reload data when tasks update (even without milestones, progress bar should update)
+    const tasksHandler = () => reload();
+
+    window.addEventListener('journeyMilestoneReached', milestoneHandler as EventListener);
+    window.addEventListener('tasksUpdated', tasksHandler);
+    return () => {
+      window.removeEventListener('journeyMilestoneReached', milestoneHandler as EventListener);
+      window.removeEventListener('tasksUpdated', tasksHandler);
+    };
   }, []);
 
   const active = data ? getActiveJourney() : null;
