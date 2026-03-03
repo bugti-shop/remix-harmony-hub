@@ -24,6 +24,7 @@ export interface JourneyProgress {
   startedAt: string;
   completedAt?: string;
   milestonesReached: string[];
+  milestonesReachedAt?: Record<string, string>; // milestoneId -> ISO date
 }
 
 export interface VirtualJourneyData {
@@ -33,6 +34,8 @@ export interface VirtualJourneyData {
   totalTasksEver: number;
 }
 
+export type BadgeRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
 export interface JourneyBadge {
   id: string;
   journeyId: string;
@@ -41,7 +44,28 @@ export interface JourneyBadge {
   icon: string;
   description: string;
   type: 'milestone' | 'journey_complete';
+  earnedAt?: string;
+  rarity: BadgeRarity;
 }
+
+export const getRarityFromJourney = (journey: Journey, type: 'milestone' | 'journey_complete', milestoneIndex?: number): BadgeRarity => {
+  if (type === 'journey_complete') return journey.totalTasks >= 75 ? 'legendary' : 'epic';
+  const total = journey.milestones.length;
+  const pos = (milestoneIndex ?? 0) + 1;
+  const ratio = pos / total;
+  if (ratio <= 0.2) return 'common';
+  if (ratio <= 0.5) return 'uncommon';
+  if (ratio <= 0.8) return 'rare';
+  return 'epic';
+};
+
+export const RARITY_CONFIG: Record<BadgeRarity, { label: string; color: string; bg: string }> = {
+  common: { label: 'Common', color: 'text-muted-foreground', bg: 'bg-muted' },
+  uncommon: { label: 'Uncommon', color: 'text-success', bg: 'bg-success/10' },
+  rare: { label: 'Rare', color: 'text-primary', bg: 'bg-primary/10' },
+  epic: { label: 'Epic', color: 'text-accent-foreground', bg: 'bg-accent' },
+  legendary: { label: 'Legendary', color: 'text-warning', bg: 'bg-warning/10' },
+};
 
 export const ALL_JOURNEYS: Journey[] = [
   {
@@ -188,9 +212,11 @@ export const advanceJourney = (): { newMilestone?: JourneyMilestone; journeyComp
 
   // Check for new milestones
   let newMilestone: JourneyMilestone | undefined;
+  if (!progress.milestonesReachedAt) progress.milestonesReachedAt = {};
   for (const ms of journey.milestones) {
     if (progress.tasksCompleted >= ms.tasksRequired && !progress.milestonesReached.includes(ms.id)) {
       progress.milestonesReached.push(ms.id);
+      progress.milestonesReachedAt[ms.id] = new Date().toISOString();
       newMilestone = ms;
     }
   }
@@ -225,7 +251,8 @@ export const getJourneyBadges = (data: VirtualJourneyData = loadJourneyData()): 
     const progress = data.journeyProgress[journey.id];
     if (!progress) continue;
 
-    for (const milestone of journey.milestones) {
+    for (let i = 0; i < journey.milestones.length; i++) {
+      const milestone = journey.milestones[i];
       if (progress.milestonesReached.includes(milestone.id)) {
         badges.push({
           id: milestone.id,
@@ -235,6 +262,8 @@ export const getJourneyBadges = (data: VirtualJourneyData = loadJourneyData()): 
           icon: milestone.icon,
           description: milestone.description,
           type: 'milestone',
+          earnedAt: progress.milestonesReachedAt?.[milestone.id],
+          rarity: getRarityFromJourney(journey, 'milestone', i),
         });
       }
     }
@@ -248,6 +277,8 @@ export const getJourneyBadges = (data: VirtualJourneyData = loadJourneyData()): 
         icon: '🏆',
         description: `Completed the full ${journey.name} journey`,
         type: 'journey_complete',
+        earnedAt: progress.completedAt,
+        rarity: getRarityFromJourney(journey, 'journey_complete'),
       });
     }
   }
