@@ -837,9 +837,9 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
                 <span
                   data-export-brand-name="true"
                   style={{
-                    fontSize: '10px',
+                    fontSize: '13px',
                     fontWeight: 600,
-                    color: '#000000',
+                    color: '#ffffff',
                     display: 'inline-flex',
                     alignItems: 'center',
                     height: '16px',
