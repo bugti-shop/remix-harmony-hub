@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Download, Copy, Check } from 'lucide-react';
+import { X, Share2, Copy, Check } from 'lucide-react';
 import { Journey, JourneyProgress } from '@/utils/virtualJourneyStorage';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { triggerHaptic } from '@/utils/haptics';
@@ -8,6 +8,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import npdLogo from '@/assets/npd-reminder-logo.png';
+import { shareImageBlob } from '@/utils/shareImage';
 
 interface JourneyCertificateProps {
   open: boolean;
@@ -64,13 +65,19 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
   const cardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
+  const [cardName, setCardName] = useState(profile.name || '');
 
   const colors = JOURNEY_COLORS[journey.id] || JOURNEY_COLORS.nile;
   const completedDate = progress.completedAt ? format(new Date(progress.completedAt), 'MMMM d, yyyy') : format(new Date(), 'MMMM d, yyyy');
   const startedDate = format(new Date(progress.startedAt), 'MMM d, yyyy');
+  const displayName = cardName.trim();
+
+  useEffect(() => {
+    if (open) setCardName(profile.name || '');
+  }, [open, profile.name]);
 
   const handleCopyLinkedIn = useCallback(async () => {
-    const text = getLinkedInText(journey, profile.name);
+    const text = getLinkedInText(journey, displayName);
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -84,12 +91,13 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
     setCopiedLinkedIn(true);
     triggerHaptic('light').catch(() => {});
     setTimeout(() => setCopiedLinkedIn(false), 2000);
-  }, [journey, profile.name]);
+  }, [journey, displayName]);
 
   const handleShare = useCallback(async () => {
     if (!cardRef.current) return;
     setIsSharing(true);
     triggerHaptic('medium').catch(() => {});
+
     try {
       const element = cardRef.current;
       const canvas = await html2canvas(element, {
@@ -103,49 +111,25 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
         scrollY: 0,
       });
 
-      canvas.toBlob(async (blob) => {
-        if (!blob) { setIsSharing(false); return; }
-        try {
-          const reader = new FileReader();
-          const base64Promise = new Promise<string>((resolve) => {
-            reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
-          });
-          reader.readAsDataURL(blob);
-          const base64Data = await base64Promise;
-
-          try {
-            const { Filesystem, Directory } = await import('@capacitor/filesystem');
-            const fileName = `npd-journey-${journey.id}.png`;
-            const savedFile = await Filesystem.writeFile({ path: fileName, data: base64Data, directory: Directory.Cache });
-            const { Share } = await import('@capacitor/share');
-            await Share.share({
-              title: `${journey.name} - Journey Complete!`,
-              text: getLinkedInText(journey, profile.name),
-              url: savedFile.uri,
-              dialogTitle: 'Share Journey Certificate',
-            });
-          } catch {
-            const file = new File([blob], `npd-journey-${journey.id}.png`, { type: 'image/png' });
-            if (navigator.share && navigator.canShare?.({ files: [file] })) {
-              try { await navigator.share({ title: `${journey.name} Complete!`, files: [file] }); } catch {}
-            } else {
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `npd-journey-${journey.id}.png`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }
-          }
-        } catch (e) {
-          console.error('[JourneyCert] Share failed:', e);
-        }
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) {
         setIsSharing(false);
-      }, 'image/png');
-    } catch {
+        return;
+      }
+
+      await shareImageBlob({
+        blob,
+        fileName: `npd-journey-${journey.id}.png`,
+        title: `${journey.name} - Journey Complete!`,
+        text: getLinkedInText(journey, displayName),
+        dialogTitle: 'Share Journey Certificate',
+      });
+    } catch (e) {
+      console.error('[JourneyCert] Share failed:', e);
+    } finally {
       setIsSharing(false);
     }
-  }, [journey, profile.name]);
+  }, [journey, displayName]);
 
   if (!open) return null;
 
@@ -294,11 +278,11 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
             </div>
 
             {/* Awarded to */}
-            {profile.name && (
+            {displayName && (
               <div data-export-profile-row="true" style={{ textAlign: 'center', marginBottom: 12 }}>
                 <p style={{ color: colors.text, fontSize: 9, opacity: 0.6, marginBottom: 2 }}>Awarded to</p>
                 <p data-export-profile-name="true" style={{ color: '#ffffff', fontSize: 16, fontWeight: 700 }}>
-                  {profile.name}
+                  {displayName}
                 </p>
               </div>
             )}
@@ -338,6 +322,20 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
             </div>
           </div>
 
+          {/* Name on certificate */}
+          <div className="bg-card border rounded-xl p-4">
+            <h3 className="text-sm font-bold mb-2">Your Name on Certificate</h3>
+            <input
+              type="text"
+              value={cardName}
+              onChange={(e) => setCardName(e.target.value)}
+              placeholder="Enter your name"
+              maxLength={40}
+              className="w-full text-sm bg-muted rounded-lg px-3 py-2 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1.5">This name will appear on the shared certificate image</p>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex gap-3">
             <motion.button
@@ -374,7 +372,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               )}
             </div>
             <p className="text-xs text-muted-foreground line-clamp-3 whitespace-pre-line">
-              {getLinkedInText(journey, profile.name)}
+              {getLinkedInText(journey, displayName)}
             </p>
           </motion.button>
         </div>

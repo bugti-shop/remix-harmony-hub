@@ -13,6 +13,7 @@ import {
   getActiveJourney,
   abandonJourney,
   VirtualJourneyData,
+  getJourneyBadges,
 } from '@/utils/virtualJourneyStorage';
 import {
   Sheet,
@@ -20,6 +21,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 import Confetti from 'react-confetti';
 import { playAchievementSound } from '@/utils/gamificationSounds';
 import { JourneyCertificate } from '@/components/JourneyCertificate';
@@ -61,6 +63,7 @@ export const VirtualJourneyCard = () => {
   }, []);
 
   const active = data ? getActiveJourney() : null;
+  const journeyBadges = data ? getJourneyBadges(data) : [];
 
   const handleStart = (journeyId: string) => {
     startJourney(journeyId);
@@ -268,6 +271,29 @@ export const VirtualJourneyCard = () => {
               );
             })}
           </div>
+          {/* Journey badges */}
+          {journeyBadges.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-foreground">Journey Badges</p>
+                <span className="text-[10px] text-muted-foreground">{journeyBadges.length} earned</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {journeyBadges.slice(-8).reverse().map((badge) => (
+                  <Badge
+                    key={badge.id}
+                    variant="secondary"
+                    className="text-[10px] gap-1 bg-muted"
+                    title={`${badge.journeyName} • ${badge.description}`}
+                  >
+                    <span>{badge.icon}</span>
+                    <span>{badge.label}</span>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Action buttons */}
           <div className="flex gap-2 mt-4">
             {isComplete && (
@@ -339,13 +365,20 @@ export const VirtualJourneyCard = () => {
           </div>
           <ChevronRight className="h-5 w-5 text-muted-foreground" />
         </div>
-        {data && data.completedJourneys.length > 0 && (
+        {data && (data.completedJourneys.length > 0 || journeyBadges.length > 0) && (
           <div className="flex items-center justify-between mt-3 pt-3 border-t">
-            <div className="flex items-center gap-1.5">
-              <Trophy className="h-3.5 w-3.5 text-warning" />
-              <span className="text-xs text-muted-foreground">
-                {data.completedJourneys.length} journey(s) completed
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <Trophy className="h-3.5 w-3.5 text-warning" />
+                <span className="text-xs text-muted-foreground">
+                  {data.completedJourneys.length} journey(s) completed
+                </span>
+              </div>
+              {journeyBadges.length > 0 && (
+                <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                  {journeyBadges.length} badges
+                </span>
+              )}
             </div>
             <span
               onClick={(e) => { e.stopPropagation(); navigate('/todo/journey-history'); }}
