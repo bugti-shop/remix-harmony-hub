@@ -260,6 +260,7 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
   const [selectedCert, setSelectedCert] = useState<CertificateLevel | null>(null);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [shareConfetti, setShareConfetti] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [celebratingCert, setCelebratingCert] = useState<CertificateLevel | null>(null);
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
@@ -414,6 +415,8 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
         text: selectedCert.linkedInDescription,
         dialogTitle: 'Share Certificate',
       });
+      setShareConfetti(true);
+      setTimeout(() => setShareConfetti(false), 3500);
     } catch (e) {
       console.error('[Certificate] Share failed:', e);
     } finally {
@@ -431,6 +434,17 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md overflow-y-auto"
       >
+        {/* Share confetti */}
+        {shareConfetti && (
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+            numberOfPieces={250}
+            gravity={0.3}
+            style={{ position: 'fixed', top: 0, left: 0, zIndex: 60 }}
+          />
+        )}
         {/* Header */}
          <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] flex items-center justify-between">
           <h2 className="text-lg font-bold flex items-center gap-2">
@@ -803,7 +817,7 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
             }}>
               <QRCodeSVG
                 value="https://play.google.com/store/apps/details?id=nota.npd.com"
-                size={48}
+                size={64}
                 level="M"
                 bgColor="#ffffff"
                 fgColor="#000000"
@@ -824,10 +838,9 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
                 <span
                   data-export-brand-name="true"
                   style={{
-                    fontSize: '9px',
+                    fontSize: '10px',
                     fontWeight: 600,
-                    color: cert.colors.text,
-                    opacity: 0.7,
+                    color: '#000000',
                     display: 'inline-flex',
                     alignItems: 'center',
                     height: '16px',
@@ -837,7 +850,7 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  Npd — Notes. Planner. Diary.
+                  Npd: Notepad & To Do List
                 </span>
               </div>
               <p style={{ color: cert.colors.text, fontSize: 7, opacity: 0.45, margin: 0 }}>
