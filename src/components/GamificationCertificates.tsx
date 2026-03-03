@@ -25,7 +25,7 @@ import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
 import Confetti from 'react-confetti';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import npdLogo from '@/assets/npd-reminder-logo.png';
+
 import { shareImageBlob } from '@/utils/shareImage';
 
 /* ============================================
@@ -834,7 +834,6 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
                   minHeight: '16px',
                 }}
               >
-                <img src={npdLogo} alt="Npd" style={{ width: 13, height: 13, borderRadius: 3 }} crossOrigin="anonymous" />
                 <span
                   data-export-brand-name="true"
                   style={{

@@ -8,7 +8,7 @@ import { triggerHaptic } from '@/utils/haptics';
 import { QRCodeSVG } from 'qrcode.react';
 import { format } from 'date-fns';
 import html2canvas from 'html2canvas';
-import npdLogo from '@/assets/npd-reminder-logo.png';
+
 import { shareImageBlob } from '@/utils/shareImage';
 
 interface JourneyCertificateProps {
@@ -325,7 +325,6 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               </div>
               <div style={{ textAlign: 'left' }}>
                 <div data-export-brand-row="true" style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
-                  <img src={npdLogo} alt="Npd" style={{ width: 13, height: 13, borderRadius: 3 }} crossOrigin="anonymous" />
                   <span data-export-brand-name="true" style={{ color: '#000000', fontSize: 10, fontWeight: 600 }}>
                     Npd: Notepad & To Do List
                   </span>

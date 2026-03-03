@@ -21,7 +21,7 @@ import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import { MedalBadge, MEDAL_COLORS, RarityIcon } from '@/components/MedalBadge';
 import { QRCodeSVG } from 'qrcode.react';
-import npdLogo from '@/assets/npd-reminder-logo.png';
+
 
 const RARITY_ORDER: BadgeRarity[] = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
 
@@ -522,7 +522,6 @@ const JourneyBadges = () => {
                   </div>
                   <div className="text-left">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <img src={npdLogo} alt="Npd" className="w-3.5 h-3.5 rounded-sm" crossOrigin="anonymous" />
                       <span className="text-[10px] font-semibold text-black dark:text-black">Npd: Notepad & To Do List</span>
                     </div>
                     <p className="text-[8px] text-muted-foreground/45">Scan to download the app</p>
