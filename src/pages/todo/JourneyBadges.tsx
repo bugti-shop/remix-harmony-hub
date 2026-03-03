@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, Shield, Sparkles, Star, Trophy, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,8 @@ import {
 } from '@/utils/virtualJourneyStorage';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import Confetti from 'react-confetti';
+import { playAchievementSound } from '@/utils/gamificationSounds';
 
 const RARITY_ORDER: BadgeRarity[] = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
 
@@ -32,9 +34,48 @@ const JourneyBadges = () => {
   const [data, setData] = useState<VirtualJourneyData | null>(null);
   const [filter, setFilter] = useState<'all' | string>('all');
   const [selectedBadge, setSelectedBadge] = useState<JourneyBadge | null>(null);
+  const [celebratingBadge, setCelebratingBadge] = useState<JourneyBadge | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const prevBadgeCount = useRef<number | null>(null);
+
+  const reload = () => setData(loadJourneyData());
 
   useEffect(() => {
-    setData(loadJourneyData());
+    reload();
+
+    // Listen for milestone events to detect new badges while on this screen
+    const milestoneHandler = (e: CustomEvent) => {
+      const oldData = loadJourneyData();
+      // Small delay to let storage update
+      setTimeout(() => {
+        const newData = loadJourneyData();
+        const oldBadges = getJourneyBadges(oldData);
+        const newBadges = getJourneyBadges(newData);
+
+        if (newBadges.length > oldBadges.length) {
+          const newBadge = newBadges.find(nb => !oldBadges.some(ob => ob.id === nb.id));
+          if (newBadge) {
+            setCelebratingBadge(newBadge);
+            setShowConfetti(true);
+            playAchievementSound();
+            setTimeout(() => setShowConfetti(false), 4000);
+            setTimeout(() => setCelebratingBadge(null), 5000);
+          }
+        }
+        setData(newData);
+      }, 100);
+    };
+
+    const tasksHandler = () => {
+      setTimeout(reload, 150);
+    };
+
+    window.addEventListener('journeyMilestoneReached', milestoneHandler as EventListener);
+    window.addEventListener('tasksUpdated', tasksHandler);
+    return () => {
+      window.removeEventListener('journeyMilestoneReached', milestoneHandler as EventListener);
+      window.removeEventListener('tasksUpdated', tasksHandler);
+    };
   }, []);
 
   const allBadges = useMemo(() => (data ? getJourneyBadges(data) : []), [data]);
@@ -72,6 +113,119 @@ const JourneyBadges = () => {
 
   return (
     <TodoLayout title="Journey Badges">
+      {/* Confetti overlay */}
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={250}
+          gravity={0.15}
+          style={{ position: 'fixed', top: 0, left: 0, zIndex: 120, pointerEvents: 'none' }}
+        />
+      )}
+
+      {/* Badge unlock celebration overlay */}
+      <AnimatePresence>
+        {celebratingBadge && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[115] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+            onClick={() => setCelebratingBadge(null)}
+          >
+            <motion.div
+              initial={{ scale: 0, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', damping: 12 }}
+              className="flex flex-col items-center gap-4 p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Animated badge icon with pulse rings */}
+              <div className="relative">
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1], rotate: [0, -15, 15, 0] }}
+                  transition={{ duration: 0.7, repeat: 2 }}
+                  className="text-7xl relative z-10"
+                >
+                  {celebratingBadge.icon}
+                </motion.div>
+                {/* Pulse rings */}
+                {[0, 1, 2].map(i => (
+                  <motion.div
+                    key={i}
+                    initial={{ scale: 0.5, opacity: 0.8 }}
+                    animate={{ scale: 2.5, opacity: 0 }}
+                    transition={{ duration: 1.5, delay: i * 0.3, repeat: Infinity }}
+                    className="absolute inset-0 rounded-full border-2 border-warning"
+                    style={{ margin: '-20%' }}
+                  />
+                ))}
+              </div>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-2xl font-bold text-foreground"
+              >
+                {celebratingBadge.type === 'journey_complete' ? '🏆 Journey Conquered!' : '🎖️ New Badge!'}
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+                className="text-lg font-semibold text-warning"
+              >
+                {celebratingBadge.label}
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-sm text-muted-foreground text-center max-w-[280px]"
+              >
+                {celebratingBadge.description}
+              </motion.p>
+
+              {/* Rarity badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.75 }}
+              >
+                {(() => {
+                  const config = RARITY_CONFIG[celebratingBadge.rarity];
+                  return (
+                    <span className={cn(
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold',
+                      config.bg, config.color
+                    )}>
+                      <RarityIcon rarity={celebratingBadge.rarity} />
+                      {config.label} Badge
+                    </span>
+                  );
+                })()}
+              </motion.div>
+
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                onClick={() => setCelebratingBadge(null)}
+                className="mt-2 text-xs text-muted-foreground"
+              >
+                Tap to continue
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="container mx-auto px-4 py-6 space-y-5">
 
         {/* Header Stats */}
@@ -189,17 +343,23 @@ const JourneyBadges = () => {
               <div className="grid grid-cols-2 gap-2.5">
                 {sorted.map((badge, i) => {
                   const config = RARITY_CONFIG[badge.rarity];
+                  const isNewlyEarned = celebratingBadge?.id === badge.id;
                   return (
                     <motion.button
                       key={badge.id}
                       initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      animate={{
+                        opacity: 1,
+                        scale: isNewlyEarned ? [1, 1.05, 1] : 1,
+                        boxShadow: isNewlyEarned ? '0 0 20px hsl(var(--warning) / 0.3)' : 'none',
+                      }}
                       transition={{ delay: i * 0.04 }}
                       whileTap={{ scale: 0.96 }}
                       onClick={() => setSelectedBadge(badge)}
                       className={cn(
                         'text-left bg-card rounded-xl p-3.5 border shadow-sm transition-all hover:shadow-md',
-                        badge.type === 'journey_complete' && 'border-warning/30 bg-warning/5'
+                        badge.type === 'journey_complete' && 'border-warning/30 bg-warning/5',
+                        isNewlyEarned && 'ring-2 ring-warning/50'
                       )}
                     >
                       <div className="flex items-start justify-between mb-2">
