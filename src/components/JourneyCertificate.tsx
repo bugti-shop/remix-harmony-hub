@@ -225,6 +225,16 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               {journey.description}
             </p>
 
+            {/* Awarded to - centered in middle */}
+            {displayName && (
+              <div data-export-profile-row="true" style={{ textAlign: 'center', marginBottom: 16 }}>
+                <p style={{ color: colors.text, fontSize: 9, opacity: 0.6, marginBottom: 2 }}>Awarded to</p>
+                <p data-export-profile-name="true" style={{ color: '#ffffff', fontSize: 16, fontWeight: 700 }}>
+                  {displayName}
+                </p>
+              </div>
+            )}
+
             {/* Divider */}
             <div style={{ width: 60, height: 2, background: colors.accent, margin: '0 auto 16px', opacity: 0.5, borderRadius: 1 }} />
 
@@ -292,16 +302,6 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               ))}
             </div>
 
-            {/* Awarded to */}
-            {displayName && (
-              <div data-export-profile-row="true" style={{ textAlign: 'center', marginBottom: 12 }}>
-                <p style={{ color: colors.text, fontSize: 9, opacity: 0.6, marginBottom: 2 }}>Awarded to</p>
-                <p data-export-profile-name="true" style={{ color: '#ffffff', fontSize: 16, fontWeight: 700 }}>
-                  {displayName}
-                </p>
-              </div>
-            )}
-
             {/* Date */}
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <p style={{ color: colors.text, fontSize: 9, opacity: 0.6 }}>
@@ -325,7 +325,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               </div>
               <div style={{ textAlign: 'left' }}>
                 <div data-export-brand-row="true" style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
-                  <span data-export-brand-name="true" style={{ color: '#000000', fontSize: 10, fontWeight: 600 }}>
+                  <span data-export-brand-name="true" style={{ color: '#ffffff', fontSize: 13, fontWeight: 600 }}>
                     Npd: Notepad & To Do List
                   </span>
                 </div>

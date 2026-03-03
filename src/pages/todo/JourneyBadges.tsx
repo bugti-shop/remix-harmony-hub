@@ -455,30 +455,8 @@ const JourneyBadges = () => {
                   <span>{selectedBadge.journeyName}</span>
                 </div>
 
-                {/* Tasks completed in X days */}
-                {data && (() => {
-                  const progress = data.journeyProgress[selectedBadge.journeyId];
-                  if (!progress) return null;
-                  const days = selectedBadge.earnedAt
-                    ? Math.max(1, differenceInDays(new Date(selectedBadge.earnedAt), new Date(progress.startedAt)))
-                    : Math.max(1, differenceInDays(new Date(), new Date(progress.startedAt)));
-                  return (
-                    <div className="mt-3 flex items-center justify-center gap-4">
-                      <div className="text-center">
-                        <p className="text-lg font-black text-foreground">{progress.tasksCompleted}</p>
-                        <p className="text-[9px] text-muted-foreground">Tasks Done</p>
-                      </div>
-                      <div className="w-px h-8 bg-border" />
-                      <div className="text-center">
-                        <p className="text-lg font-black text-foreground">{days}</p>
-                        <p className="text-[9px] text-muted-foreground">Days</p>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* User name on badge */}
-                <div className="mt-4 pt-3 border-t border-border/40">
+                {/* User name on badge - centered in middle */}
+                <div className="mt-3 pt-3 border-t border-border/40">
                   {editingName ? (
                     <div className="flex items-center gap-2 justify-center">
                       <input
@@ -503,6 +481,28 @@ const JourneyBadges = () => {
                   )}
                 </div>
 
+                {/* Tasks completed in X days */}
+                {data && (() => {
+                  const progress = data.journeyProgress[selectedBadge.journeyId];
+                  if (!progress) return null;
+                  const days = selectedBadge.earnedAt
+                    ? Math.max(1, differenceInDays(new Date(selectedBadge.earnedAt), new Date(progress.startedAt)))
+                    : Math.max(1, differenceInDays(new Date(), new Date(progress.startedAt)));
+                  return (
+                    <div className="mt-3 flex items-center justify-center gap-4">
+                      <div className="text-center">
+                        <p className="text-lg font-black text-foreground">{progress.tasksCompleted}</p>
+                        <p className="text-[9px] text-muted-foreground">Tasks Done</p>
+                      </div>
+                      <div className="w-px h-8 bg-border" />
+                      <div className="text-center">
+                        <p className="text-lg font-black text-foreground">{days}</p>
+                        <p className="text-[9px] text-muted-foreground">Days</p>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {selectedBadge.earnedAt && (
                   <p className="text-[10px] text-muted-foreground/50 mt-3">
                     Earned {format(new Date(selectedBadge.earnedAt), 'MMMM d, yyyy')}
@@ -522,7 +522,7 @@ const JourneyBadges = () => {
                   </div>
                   <div className="text-left">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[10px] font-semibold text-black dark:text-black">Npd: Notepad & To Do List</span>
+                      <span className="text-[13px] font-semibold text-black dark:text-black">Npd: Notepad & To Do List</span>
                     </div>
                     <p className="text-[8px] text-muted-foreground/45">Scan to download the app</p>
                   </div>
