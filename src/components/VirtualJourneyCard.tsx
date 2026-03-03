@@ -288,7 +288,9 @@ export const VirtualJourneyCard = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 {journeyBadges.slice(-6).reverse().map((badge) => (
-                  <MiniMedalBadge key={badge.id} badge={badge} />
+                  <button key={badge.id} onClick={() => navigate('/todo/journey-badges')} className="hover:opacity-80 transition-opacity">
+                    <MiniMedalBadge badge={badge} />
+                  </button>
                 ))}
               </div>
             </div>

@@ -69,7 +69,7 @@ export const MiniMedalBadge = ({ badge }: { badge: JourneyBadge }) => {
           </div>
         </div>
       </div>
-      <span className={cn('text-[8px] font-bold text-center leading-tight line-clamp-2', config.color)}>{badge.label}</span>
+      <span className="text-[8px] font-bold text-center leading-tight line-clamp-2 text-foreground">{badge.label}</span>
     </div>
   );
 };
