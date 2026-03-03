@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { RARITY_CONFIG, BadgeRarity } from '@/utils/virtualJourneyStorage';
-import { Crown, Sparkles, Star, Shield, Award } from 'lucide-react';
+import { RarityIcon, MEDAL_COLORS } from '@/components/MedalBadge';
 
 interface BadgeUnlockToastProps {
   icon: string;
@@ -11,27 +11,9 @@ interface BadgeUnlockToastProps {
   isJourneyComplete?: boolean;
 }
 
-const RarityIcon = ({ rarity }: { rarity: BadgeRarity }) => {
-  const size = 'h-3 w-3';
-  switch (rarity) {
-    case 'legendary': return <Crown className={cn(size, 'text-warning')} />;
-    case 'epic': return <Sparkles className={cn(size, 'text-primary')} />;
-    case 'rare': return <Star className={cn(size, 'text-primary')} />;
-    case 'uncommon': return <Shield className={cn(size, 'text-success')} />;
-    default: return <Award className={cn(size, 'text-muted-foreground')} />;
-  }
-};
-
-const MEDAL_RING: Record<BadgeRarity, string> = {
-  legendary: 'from-yellow-400 via-amber-500 to-yellow-600',
-  epic: 'from-purple-400 via-violet-500 to-purple-600',
-  rare: 'from-blue-400 via-cyan-500 to-blue-600',
-  uncommon: 'from-emerald-400 via-green-500 to-emerald-600',
-  common: 'from-zinc-300 via-zinc-400 to-zinc-500',
-};
-
 export const BadgeUnlockToast = ({ icon, label, journeyName, rarity, isJourneyComplete }: BadgeUnlockToastProps) => {
   const config = RARITY_CONFIG[rarity];
+  const medal = MEDAL_COLORS[rarity];
 
   return (
     <div className="flex items-center gap-3">
@@ -44,11 +26,11 @@ export const BadgeUnlockToast = ({ icon, label, journeyName, rarity, isJourneyCo
       >
         {/* Ribbon tails */}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5 z-0">
-          <div className={cn('w-1.5 h-2.5 rounded-b-sm -rotate-12 bg-gradient-to-b', MEDAL_RING[rarity])} />
-          <div className={cn('w-1.5 h-2.5 rounded-b-sm rotate-12 bg-gradient-to-b', MEDAL_RING[rarity])} />
+          <div className={cn('w-1.5 h-2.5 rounded-b-sm -rotate-12 bg-gradient-to-b', medal.ring)} />
+          <div className={cn('w-1.5 h-2.5 rounded-b-sm rotate-12 bg-gradient-to-b', medal.ring)} />
         </div>
         {/* Medal circle */}
-        <div className={cn('w-11 h-11 rounded-full p-[2px] bg-gradient-to-br relative z-10', MEDAL_RING[rarity])}>
+        <div className={cn('w-11 h-11 rounded-full p-[2px] bg-gradient-to-br relative z-10', medal.ring)}>
           <div className="w-full h-full rounded-full p-[2px] bg-gradient-to-br from-white/20 to-transparent">
             <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 text-lg">
               {icon}
@@ -91,7 +73,7 @@ export const BadgeUnlockToast = ({ icon, label, journeyName, rarity, isJourneyCo
           className="flex items-center gap-1.5 mt-1"
         >
           <span className={cn('flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold', config.bg, config.color)}>
-            <RarityIcon rarity={rarity} />
+            <RarityIcon rarity={rarity} size="h-3 w-3" />
             {config.label}
           </span>
           <span className="text-[10px] text-muted-foreground/60">{journeyName}</span>

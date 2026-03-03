@@ -27,36 +27,7 @@ import {
 import Confetti from 'react-confetti';
 import { playAchievementSound } from '@/utils/gamificationSounds';
 import { JourneyCertificate } from '@/components/JourneyCertificate';
-
-const MEDAL_RING: Record<BadgeRarity, string> = {
-  legendary: 'from-yellow-400 via-amber-500 to-yellow-600',
-  epic: 'from-purple-400 via-violet-500 to-purple-600',
-  rare: 'from-blue-400 via-cyan-500 to-blue-600',
-  uncommon: 'from-emerald-400 via-green-500 to-emerald-600',
-  common: 'from-zinc-300 via-zinc-400 to-zinc-500',
-};
-
-const MiniMedalBadge = ({ badge }: { badge: JourneyBadge }) => {
-  const config = RARITY_CONFIG[badge.rarity];
-  return (
-    <div className="flex flex-col items-center gap-1 w-14" title={`${badge.label} • ${badge.description}`}>
-      <div className="relative">
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5 z-0">
-          <div className={cn('w-1.5 h-2.5 rounded-b-sm -rotate-12 bg-gradient-to-b', MEDAL_RING[badge.rarity])} />
-          <div className={cn('w-1.5 h-2.5 rounded-b-sm rotate-12 bg-gradient-to-b', MEDAL_RING[badge.rarity])} />
-        </div>
-        <div className={cn('w-11 h-11 rounded-full p-[2px] bg-gradient-to-br relative z-10', MEDAL_RING[badge.rarity])}>
-          <div className="w-full h-full rounded-full p-[2px] bg-gradient-to-br from-white/20 to-transparent">
-            <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
-              <span className="text-base">{badge.icon}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <span className={cn('text-[8px] font-bold text-center leading-tight line-clamp-2', config.color)}>{badge.label}</span>
-    </div>
-  );
-};
+import { MiniMedalBadge } from '@/components/MedalBadge';
 
 export const VirtualJourneyCard = () => {
   const navigate = useNavigate();
