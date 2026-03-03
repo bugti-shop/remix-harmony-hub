@@ -105,11 +105,15 @@ const JourneyBadges = () => {
     if (!badgeCardRef.current || !selectedBadge) return;
     setIsSharing(true);
     try {
+      // Hide elements marked as no-export before capturing
+      const noExportEls = badgeCardRef.current.querySelectorAll('[data-no-export="true"]');
+      noExportEls.forEach(el => (el as HTMLElement).style.display = 'none');
       const canvas = await html2canvas(badgeCardRef.current, {
         backgroundColor: null,
         scale: 3,
         useCORS: true,
       });
+      noExportEls.forEach(el => (el as HTMLElement).style.display = '');
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(b => b ? resolve(b) : reject(new Error('Failed')), 'image/png');
       });
@@ -246,17 +250,6 @@ const JourneyBadges = () => {
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="text-sm text-muted-foreground text-center max-w-[280px]">
                 {celebratingBadge.description}
               </motion.p>
-              <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.75 }}>
-                {(() => {
-                  const config = RARITY_CONFIG[celebratingBadge.rarity];
-                  return (
-                    <span className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold', config.bg, config.color)}>
-                      <RarityIcon rarity={celebratingBadge.rarity} />
-                      {config.label} Badge
-                    </span>
-                  );
-                })()}
-              </motion.div>
               <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} onClick={() => setCelebratingBadge(null)} className="mt-2 text-xs text-muted-foreground">
                 Tap to continue
               </motion.button>
@@ -377,10 +370,6 @@ const JourneyBadges = () => {
                         <MedalBadge badge={badge} size="md" />
                       </div>
                       <p className="font-bold text-xs text-foreground truncate relative z-10">{badge.label}</p>
-                      <div className={cn('flex items-center justify-center gap-1 mt-1 text-[9px] font-bold relative z-10', config.color)}>
-                        <RarityIcon rarity={badge.rarity} />
-                        {config.label}
-                      </div>
                       {badge.earnedAt && (
                         <p className="text-[9px] text-muted-foreground/60 mt-1.5 relative z-10">{format(new Date(badge.earnedAt), 'MMM d, yyyy')}</p>
                       )}
@@ -436,17 +425,6 @@ const JourneyBadges = () => {
 
                 <h3 className="font-bold text-lg text-foreground mb-1">{selectedBadge.label}</h3>
 
-                <div className="flex items-center justify-center gap-1.5 mb-3">
-                  {(() => {
-                    const config = RARITY_CONFIG[selectedBadge.rarity];
-                    return (
-                      <span className={cn('flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold', config.bg, config.color)}>
-                        <RarityIcon rarity={selectedBadge.rarity} />
-                        {config.label}
-                      </span>
-                    );
-                  })()}
-                </div>
 
                 <p className="text-sm text-muted-foreground mb-2">{selectedBadge.description}</p>
 
@@ -474,13 +452,23 @@ const JourneyBadges = () => {
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => setEditingName(true)} className="flex flex-col items-center gap-1 mx-auto text-sm text-foreground/80 hover:text-foreground transition-colors">
-                      <span className="font-semibold flex items-center gap-1.5">
-                        {badgeName || 'Add your name'}
-                        <Edit3 className="h-3 w-3 text-muted-foreground" />
-                      </span>
-                      {badgeName && <div className="w-16 h-0.5 rounded-full bg-primary/40" />}
-                    </button>
+                    <>
+                      {/* Show name if set, otherwise show edit button - edit UI hidden in export */}
+                      {badgeName ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-semibold text-sm text-foreground">{badgeName}</span>
+                          <div className="w-16 h-0.5 rounded-full bg-primary/40" />
+                          <button data-no-export="true" onClick={() => setEditingName(true)} className="mt-1 text-[10px] text-muted-foreground flex items-center gap-1">
+                            <Edit3 className="h-2.5 w-2.5" /> Edit
+                          </button>
+                        </div>
+                      ) : (
+                        <button data-no-export="true" onClick={() => setEditingName(true)} className="flex items-center gap-1.5 mx-auto text-sm text-foreground/80 hover:text-foreground transition-colors">
+                          <span className="font-semibold">Add your name</span>
+                          <Edit3 className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
 
@@ -488,13 +476,16 @@ const JourneyBadges = () => {
                 {data && (() => {
                   const progress = data.journeyProgress[selectedBadge.journeyId];
                   if (!progress) return null;
-                  const days = selectedBadge.earnedAt
-                    ? Math.max(1, differenceInDays(new Date(selectedBadge.earnedAt), new Date(progress.startedAt)))
-                    : Math.max(1, differenceInDays(new Date(), new Date(progress.startedAt)));
+                  // Show milestone-specific tasksRequired, not total journey tasks
+                  const journey = ALL_JOURNEYS.find(j => j.id === selectedBadge.journeyId);
+                  const milestone = journey?.milestones.find(m => m.id === selectedBadge.id);
+                  const tasksForBadge = milestone?.tasksRequired ?? progress.tasksCompleted;
+                  const earnedDate = selectedBadge.earnedAt ? new Date(selectedBadge.earnedAt) : new Date();
+                  const days = Math.max(1, differenceInDays(earnedDate, new Date(progress.startedAt)));
                   return (
                     <div className="mt-3 flex items-center justify-center gap-4">
                       <div className="text-center">
-                        <p className="text-lg font-black text-foreground">{progress.tasksCompleted}</p>
+                        <p className="text-lg font-black text-foreground">{tasksForBadge}</p>
                         <p className="text-[9px] text-muted-foreground">Tasks Done</p>
                       </div>
                       <div className="w-px h-8 bg-border" />

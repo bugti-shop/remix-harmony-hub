@@ -101,10 +101,6 @@ export const BadgeUnlockToast = ({ icon, label, journeyName, rarity, isJourneyCo
           transition={{ delay: 0.35 }}
           className="flex items-center gap-1.5 mt-1"
         >
-          <span className={cn('flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold', config.bg, config.color)}>
-            <RarityIcon rarity={rarity} size="h-3 w-3" />
-            {config.label}
-          </span>
           <span className="text-[10px] text-muted-foreground/60">{journeyName}</span>
         </motion.div>
       </div>
