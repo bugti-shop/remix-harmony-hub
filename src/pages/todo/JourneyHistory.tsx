@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Trophy, MapPin, ChevronRight, Compass } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Trophy, MapPin, ChevronRight, Compass, Award } from 'lucide-react';
+import { getJourneyBadges } from '@/utils/virtualJourneyStorage';
 import { cn } from '@/lib/utils';
 import { TodoLayout } from './TodoLayout';
 import {
@@ -16,6 +18,7 @@ import { format } from 'date-fns';
 
 const JourneyHistory = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [data, setData] = useState<VirtualJourneyData | null>(null);
   const [selectedJourney, setSelectedJourney] = useState<{ journey: Journey; progress: JourneyProgress } | null>(null);
 
@@ -73,6 +76,30 @@ const JourneyHistory = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Badges link */}
+        {(() => {
+          const badgeCount = data ? getJourneyBadges(data).length : 0;
+          return (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/todo/journey-badges')}
+              className="w-full bg-card rounded-xl p-4 border shadow-sm flex items-center gap-3 text-left"
+            >
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Award className="h-4.5 w-4.5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Journey Badges</p>
+                <p className="text-[10px] text-muted-foreground">{badgeCount} badge{badgeCount !== 1 ? 's' : ''} earned</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </motion.button>
+          );
+        })()}
 
         {/* Journey List */}
         {journeysWithProgress.length === 0 ? (
