@@ -17,6 +17,8 @@ import { NavigationBackProvider } from "@/components/NavigationBackProvider";
 import { getSetting, setSetting } from "@/utils/settingsStorage";
 import { shouldAppBeLocked, updateLastUnlockTime } from "@/utils/appLockStorage";
 import { useJourneyAdvancement } from "@/hooks/useJourneyAdvancement";
+import { useAchievementToasts } from "@/hooks/useAchievementToasts";
+import { useCertificateToasts } from "@/hooks/useCertificateToasts";
 import { AppLockScreen } from "@/components/AppLockScreen";
 import { WhatsNewSheet } from "@/components/WhatsNewSheet";
 import { StreakMilestoneCelebration } from "@/components/StreakMilestoneCelebration";
@@ -189,6 +191,8 @@ const AppContent = () => {
   
   // Global journey advancement - listens for task completions from any page
   useJourneyAdvancement();
+  useAchievementToasts();
+  useCertificateToasts();
 
   // Defer non-critical sync hooks until after first paint
   const deferredInit = useRef(false);
