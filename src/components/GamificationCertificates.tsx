@@ -25,6 +25,7 @@ import html2canvas from 'html2canvas';
 import Confetti from 'react-confetti';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import npdLogo from '@/assets/npd-reminder-logo.png';
+import { shareImageBlob } from '@/utils/shareImage';
 
 /* ============================================
    CERTIFICATE DEFINITIONS
@@ -339,9 +340,10 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
   }, []);
 
   const handleShareCard = useCallback(async () => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || !selectedCert) return;
     setIsSharing(true);
     triggerHaptic('medium').catch(() => {});
+
     try {
       const element = cardRef.current;
       const exportWidth = Math.round(element.offsetWidth);
@@ -397,59 +399,23 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
           }
         },
       });
-      canvas.toBlob(async (blob) => {
-        if (!blob) { setIsSharing(false); return; }
-        try {
-          // Convert blob to base64
-          const reader = new FileReader();
-          const base64Promise = new Promise<string>((resolve) => {
-            reader.onloadend = () => {
-              const result = reader.result as string;
-              resolve(result.split(',')[1]); // Remove data:image/png;base64, prefix
-            };
-          });
-          reader.readAsDataURL(blob);
-          const base64Data = await base64Promise;
 
-          // Try Capacitor native share (works on Android/iOS)
-          try {
-            const { Filesystem, Directory } = await import('@capacitor/filesystem');
-            const fileName = `npd-certificate-${selectedCert?.id}.png`;
-            
-            // Write file to cache directory
-            const savedFile = await Filesystem.writeFile({
-              path: fileName,
-              data: base64Data,
-              directory: Directory.Cache,
-            });
-
-            const { Share } = await import('@capacitor/share');
-            await Share.share({
-              title: `Npd ${selectedCert?.title} Certificate`,
-              text: selectedCert?.linkedInDescription,
-              url: savedFile.uri,
-              dialogTitle: 'Share Certificate',
-            });
-          } catch (capacitorError) {
-            // Fallback: Web share API or download
-            const file = new File([blob], `npd-certificate-${selectedCert?.id}.png`, { type: 'image/png' });
-            if (navigator.share && navigator.canShare?.({ files: [file] })) {
-              try { await navigator.share({ title: `Npd ${selectedCert?.title} Certificate`, text: selectedCert?.linkedInDescription, files: [file] }); } catch {}
-            } else {
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `npd-certificate-${selectedCert?.id}.png`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }
-          }
-        } catch (e) {
-          console.error('[Certificate] Share failed:', e);
-        }
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) {
         setIsSharing(false);
-      }, 'image/png');
-    } catch {
+        return;
+      }
+
+      await shareImageBlob({
+        blob,
+        fileName: `npd-certificate-${selectedCert.id}.png`,
+        title: `Npd ${selectedCert.title} Certificate`,
+        text: selectedCert.linkedInDescription,
+        dialogTitle: 'Share Certificate',
+      });
+    } catch (e) {
+      console.error('[Certificate] Share failed:', e);
+    } finally {
       setIsSharing(false);
     }
   }, [selectedCert]);

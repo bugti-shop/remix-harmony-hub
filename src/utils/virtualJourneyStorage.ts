@@ -33,6 +33,16 @@ export interface VirtualJourneyData {
   totalTasksEver: number;
 }
 
+export interface JourneyBadge {
+  id: string;
+  journeyId: string;
+  journeyName: string;
+  label: string;
+  icon: string;
+  description: string;
+  type: 'milestone' | 'journey_complete';
+}
+
 export const ALL_JOURNEYS: Journey[] = [
   {
     id: 'nile',
@@ -206,6 +216,43 @@ export const getActiveJourney = (): { journey: Journey; progress: JourneyProgres
   const progress = data.journeyProgress[data.activeJourneyId];
   if (!journey || !progress) return null;
   return { journey, progress };
+};
+
+export const getJourneyBadges = (data: VirtualJourneyData = loadJourneyData()): JourneyBadge[] => {
+  const badges: JourneyBadge[] = [];
+
+  for (const journey of ALL_JOURNEYS) {
+    const progress = data.journeyProgress[journey.id];
+    if (!progress) continue;
+
+    for (const milestone of journey.milestones) {
+      if (progress.milestonesReached.includes(milestone.id)) {
+        badges.push({
+          id: milestone.id,
+          journeyId: journey.id,
+          journeyName: journey.name,
+          label: milestone.name,
+          icon: milestone.icon,
+          description: milestone.description,
+          type: 'milestone',
+        });
+      }
+    }
+
+    if (data.completedJourneys.includes(journey.id)) {
+      badges.push({
+        id: `${journey.id}_complete`,
+        journeyId: journey.id,
+        journeyName: journey.name,
+        label: `${journey.name} Conqueror`,
+        icon: '🏆',
+        description: `Completed the full ${journey.name} journey`,
+        type: 'journey_complete',
+      });
+    }
+  }
+
+  return badges;
 };
 
 export const abandonJourney = () => {
