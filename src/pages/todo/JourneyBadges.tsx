@@ -12,7 +12,7 @@ import {
   RARITY_CONFIG,
   VirtualJourneyData,
 } from '@/utils/virtualJourneyStorage';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import Confetti from 'react-confetti';
 import { playAchievementSound } from '@/utils/gamificationSounds';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -20,6 +20,8 @@ import { shareImageBlob } from '@/utils/shareImage';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 import { MedalBadge, MEDAL_COLORS, RarityIcon } from '@/components/MedalBadge';
+import { QRCodeSVG } from 'qrcode.react';
+import npdLogo from '@/assets/npd-reminder-logo.png';
 
 const RARITY_ORDER: BadgeRarity[] = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
 
@@ -427,6 +429,28 @@ const JourneyBadges = () => {
                   <span>{selectedBadge.journeyName}</span>
                 </div>
 
+                {/* Tasks completed in X days */}
+                {data && (() => {
+                  const progress = data.journeyProgress[selectedBadge.journeyId];
+                  if (!progress) return null;
+                  const days = selectedBadge.earnedAt
+                    ? Math.max(1, differenceInDays(new Date(selectedBadge.earnedAt), new Date(progress.startedAt)))
+                    : Math.max(1, differenceInDays(new Date(), new Date(progress.startedAt)));
+                  return (
+                    <div className="mt-3 flex items-center justify-center gap-4">
+                      <div className="text-center">
+                        <p className="text-lg font-black text-foreground">{progress.tasksCompleted}</p>
+                        <p className="text-[9px] text-muted-foreground">Tasks Done</p>
+                      </div>
+                      <div className="w-px h-8 bg-border" />
+                      <div className="text-center">
+                        <p className="text-lg font-black text-foreground">{days}</p>
+                        <p className="text-[9px] text-muted-foreground">Days</p>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* User name on badge */}
                 <div className="mt-4 pt-3 border-t border-border/40">
                   {editingName ? (
@@ -458,6 +482,26 @@ const JourneyBadges = () => {
                     Earned {format(new Date(selectedBadge.earnedAt), 'MMMM d, yyyy')}
                   </p>
                 )}
+
+                {/* QR Code + Branding */}
+                <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-center gap-3">
+                  <div className="bg-white rounded-md p-1 flex items-center justify-center">
+                    <QRCodeSVG
+                      value="https://play.google.com/store/apps/details?id=nota.npd.com"
+                      size={44}
+                      level="M"
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <img src={npdLogo} alt="Npd" className="w-3.5 h-3.5 rounded-sm" crossOrigin="anonymous" />
+                      <span className="text-[9px] font-semibold text-muted-foreground/70">Npd — Notes. Planner. Diary.</span>
+                    </div>
+                    <p className="text-[8px] text-muted-foreground/45">Scan to download the app</p>
+                  </div>
+                </div>
               </div>
 
               {/* Action buttons outside card (not captured in screenshot) */}
