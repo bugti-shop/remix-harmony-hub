@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { advanceJourney, getActiveJourney } from '@/utils/virtualJourneyStorage';
 import { playAchievementSound } from '@/utils/gamificationSounds';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Global hook that listens for task completions and advances the active journey.
@@ -15,7 +16,21 @@ export const useJourneyAdvancement = () => {
       const result = advanceJourney();
       if (result.newMilestone || result.journeyCompleted) {
         playAchievementSound();
-        // Dispatch a custom event so VirtualJourneyCard (if mounted) can show celebrations
+
+        // Show toast so user gets feedback on any page
+        if (result.journeyCompleted) {
+          toast({
+            title: '🏆 Journey Complete!',
+            description: `You finished the ${active.journey.name} journey!`,
+          });
+        } else if (result.newMilestone) {
+          toast({
+            title: `${result.newMilestone.icon} Milestone Reached!`,
+            description: result.newMilestone.name,
+          });
+        }
+
+        // Dispatch event so VirtualJourneyCard (if mounted) can show celebrations
         window.dispatchEvent(
           new CustomEvent('journeyMilestoneReached', {
             detail: { milestone: result.newMilestone, completed: result.journeyCompleted },
