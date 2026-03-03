@@ -177,6 +177,59 @@ const JourneyBadges = () => {
                     style={{ margin: '-20%' }}
                   />
                 ))}
+                {/* Particle burst for legendary/epic */}
+                {(celebratingBadge.rarity === 'legendary' || celebratingBadge.rarity === 'epic') && (
+                  <>
+                    {Array.from({ length: 16 }).map((_, i) => {
+                      const angle = (i / 16) * 360;
+                      const rad = (angle * Math.PI) / 180;
+                      const distance = 90 + (i % 3) * 20;
+                      const color = celebratingBadge.rarity === 'legendary' ? 'bg-amber-400' : 'bg-violet-400';
+                      const size = i % 3 === 0 ? 'w-2.5 h-2.5' : i % 3 === 1 ? 'w-2 h-2' : 'w-1.5 h-1.5';
+                      return (
+                        <motion.div
+                          key={`particle-${i}`}
+                          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                          animate={{
+                            x: Math.cos(rad) * distance,
+                            y: Math.sin(rad) * distance,
+                            opacity: 0,
+                            scale: 0,
+                          }}
+                          transition={{ duration: 1.2, delay: 0.3 + i * 0.05, ease: 'easeOut' }}
+                          className={cn(
+                            'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full',
+                            size, color
+                          )}
+                        />
+                      );
+                    })}
+                    {/* Secondary sparkle ring */}
+                    {Array.from({ length: 12 }).map((_, i) => {
+                      const angle = (i / 12) * 360 + 15;
+                      const rad = (angle * Math.PI) / 180;
+                      const distance = 60 + (i % 2) * 15;
+                      const starColor = celebratingBadge.rarity === 'legendary' ? 'text-yellow-300' : 'text-purple-300';
+                      return (
+                        <motion.div
+                          key={`star-${i}`}
+                          initial={{ x: 0, y: 0, opacity: 0, scale: 0, rotate: 0 }}
+                          animate={{
+                            x: Math.cos(rad) * distance,
+                            y: Math.sin(rad) * distance,
+                            opacity: [0, 1, 0],
+                            scale: [0, 1.2, 0],
+                            rotate: 180,
+                          }}
+                          transition={{ duration: 1, delay: 0.5 + i * 0.06, ease: 'easeOut' }}
+                          className={cn('absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs', starColor)}
+                        >
+                          ✦
+                        </motion.div>
+                      );
+                    })}
+                  </>
+                )}
               </div>
 
               <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-2xl font-bold text-foreground">

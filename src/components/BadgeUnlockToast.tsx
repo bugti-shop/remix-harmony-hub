@@ -47,6 +47,35 @@ export const BadgeUnlockToast = ({ icon, label, journeyName, rarity, isJourneyCo
             isJourneyComplete ? 'border-warning' : 'border-primary'
           )}
         />
+        {/* Particle burst for legendary/epic */}
+        {(rarity === 'legendary' || rarity === 'epic') && (
+          <>
+            {Array.from({ length: 8 }).map((_, i) => {
+              const angle = (i / 8) * 360;
+              const rad = (angle * Math.PI) / 180;
+              const distance = 28;
+              const color = rarity === 'legendary' ? 'bg-amber-400' : 'bg-violet-400';
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                  animate={{
+                    x: Math.cos(rad) * distance,
+                    y: Math.sin(rad) * distance,
+                    opacity: 0,
+                    scale: 0,
+                  }}
+                  transition={{ duration: 0.7, delay: 0.25 + i * 0.03, ease: 'easeOut' }}
+                  className={cn(
+                    'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full z-20',
+                    i % 2 === 0 ? 'w-1.5 h-1.5' : 'w-1 h-1',
+                    color
+                  )}
+                />
+              );
+            })}
+          </>
+        )}
       </motion.div>
 
       <div className="flex-1 min-w-0">
