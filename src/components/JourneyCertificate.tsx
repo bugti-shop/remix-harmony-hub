@@ -57,8 +57,8 @@ const JOURNEY_COLORS: Record<string, { bg: string; accent: string; text: string;
   },
 };
 
-const getLinkedInText = (journey: Journey, userName: string) => {
-  return `🏆 Journey Complete: ${journey.name}!\n\nI just completed the "${journey.name}" virtual journey on Npd by finishing ${journey.totalTasks} tasks! ${journey.emoji}\n\n${journey.description}\n\nMilestones conquered:\n${journey.milestones.map(m => `${m.icon} ${m.name}`).join('\n')}\n\nProductivity meets adventure! Every task completed brought me closer to the finish line. 🎯\n\n${userName ? `— ${userName}` : ''}\n#Productivity #VirtualJourney #Npd #TaskManagement #Achievement`;
+const getLinkedInText = (journey: Journey, userName: string, totalTasks: number, totalDays: number) => {
+  return `🏆 Journey Complete: ${journey.name}!\n\nI just completed the "${journey.name}" virtual journey on Npd by finishing ${totalTasks} tasks in ${totalDays} days! ${journey.emoji}\n\n${journey.description}\n\nMilestones conquered:\n${journey.milestones.map(m => `${m.icon} ${m.name} (${m.tasksRequired} tasks)`).join('\n')}\n\nProductivity meets adventure! Every task completed brought me closer to the finish line. 🎯\n\n${userName ? `— ${userName}` : ''}\n#Productivity #VirtualJourney #Npd #TaskManagement #Achievement`;
 };
 
 export const JourneyCertificate = ({ open, onClose, journey, progress }: JourneyCertificateProps) => {
@@ -72,6 +72,10 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
   const colors = JOURNEY_COLORS[journey.id] || JOURNEY_COLORS.nile;
   const completedDate = progress.completedAt ? format(new Date(progress.completedAt), 'MMMM d, yyyy') : format(new Date(), 'MMMM d, yyyy');
   const startedDate = format(new Date(progress.startedAt), 'MMM d, yyyy');
+  const totalTasks = journey.milestones.reduce((sum, ms) => sum + ms.tasksRequired, 0);
+  const startDate = new Date(progress.startedAt);
+  const endDate = progress.completedAt ? new Date(progress.completedAt) : new Date();
+  const totalDays = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
   const displayName = cardName.trim();
 
   useEffect(() => {
@@ -79,7 +83,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
   }, [open, profile.name]);
 
   const handleCopyLinkedIn = useCallback(async () => {
-    const text = getLinkedInText(journey, displayName);
+    const text = getLinkedInText(journey, displayName, totalTasks, totalDays);
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -123,7 +127,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
         blob,
         fileName: `npd-journey-${journey.id}.png`,
         title: `${journey.name} - Journey Complete!`,
-        text: getLinkedInText(journey, displayName),
+        text: getLinkedInText(journey, displayName, totalTasks, totalDays),
         dialogTitle: 'Share Journey Certificate',
       });
       setShareConfetti(true);
@@ -242,7 +246,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
             <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 16 }}>
               <div style={{ textAlign: 'center' }}>
                 <p style={{ color: colors.accent, fontSize: 20, fontWeight: 800, margin: 0 }}>
-                  {progress.tasksCompleted}
+                  {totalTasks}
                 </p>
                 <p style={{ color: colors.text, fontSize: 9, opacity: 0.7 }}>Tasks Done</p>
               </div>
@@ -251,6 +255,12 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
                   {journey.milestones.length}
                 </p>
                 <p style={{ color: colors.text, fontSize: 9, opacity: 0.7 }}>Milestones</p>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ color: colors.accent, fontSize: 20, fontWeight: 800, margin: 0 }}>
+                  {totalDays}
+                </p>
+                <p style={{ color: colors.text, fontSize: 9, opacity: 0.7 }}>Days</p>
               </div>
             </div>
 
@@ -386,7 +396,7 @@ export const JourneyCertificate = ({ open, onClose, journey, progress }: Journey
               )}
             </div>
             <p className="text-xs text-muted-foreground line-clamp-3 whitespace-pre-line">
-              {getLinkedInText(journey, displayName)}
+              {getLinkedInText(journey, displayName, totalTasks, totalDays)}
             </p>
           </motion.button>
         </div>
