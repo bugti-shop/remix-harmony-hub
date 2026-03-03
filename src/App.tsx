@@ -38,6 +38,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const Progress = lazy(() => import("./pages/todo/Progress"));
 const JourneyHistory = lazy(() => import("./pages/todo/JourneyHistory"));
+const JourneyBadges = lazy(() => import("./pages/todo/JourneyBadges"));
 const TodoCalendar = lazy(() => import("./pages/todo/TodoCalendar"));
 const TodoSettings = lazy(() => import("./pages/todo/TodoSettings"));
 const WebClipper = lazy(() => import("./pages/WebClipper"));
@@ -167,6 +168,7 @@ const AppRoutes = () => {
             <Route path="/todo/settings" element={<TodoSettings />} />
             <Route path="/todo/progress" element={<Progress />} />
             <Route path="/todo/journey-history" element={<JourneyHistory />} />
+            <Route path="/todo/journey-badges" element={<JourneyBadges />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />

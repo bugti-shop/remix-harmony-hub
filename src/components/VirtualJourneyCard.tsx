@@ -276,7 +276,12 @@ export const VirtualJourneyCard = () => {
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold text-foreground">Journey Badges</p>
-                <span className="text-[10px] text-muted-foreground">{journeyBadges.length} earned</span>
+                <button
+                  onClick={() => navigate('/todo/journey-badges')}
+                  className="text-[10px] text-primary font-semibold flex items-center gap-0.5"
+                >
+                  View All <ChevronRight className="h-3 w-3" />
+                </button>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {journeyBadges.slice(-8).reverse().map((badge) => (
