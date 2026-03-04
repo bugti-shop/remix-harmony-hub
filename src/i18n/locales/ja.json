@@ -2534,5 +2534,25 @@
   },
   "findReplace": {
     "back": "戻る", "title": "検索と置換", "find": "検索", "findPlaceholder": "検索テキストを入力...", "matchOf": "{{current}} / {{total}} 件目", "replaceWith": "置換テキスト", "replacePlaceholder": "置換テキストを入力...", "replaceNext": "次を置換", "replaceAll": "すべて置換", "removeAllMatches": "すべての一致を削除", "clear": "クリア", "cleared": "クリアしました", "enterSearchTerm": "検索語を入力してください", "foundMatches": "{{count}}件見つかりました", "noMatchesFound": "一致なし", "enterSearchFirst": "先に検索語を入力してください", "noMatchesToReplace": "置換する一致がありません。先に検索をクリックしてください。", "replacedOccurrences": "{{count}}件置換しました", "noMatchesToRemove": "削除する一致がありません。先に検索をクリックしてください。", "removedOccurrences": "{{count}}件削除しました", "replacedOneRemaining": "1件置換 (残り{{count}}件)", "replacedLastMatch": "最後の一致を置換しました"
+  },
+  "journey": {
+    "title": "バーチャル旅", "chooseAdventure": "冒険を選ぼう", "startDescription": "タスクを完了して世界を旅しよう！冒険を選んでください。", "newJourney": "新しい旅", "change": "変更", "journeyComplete": "旅完了！🎉", "milestoneReached": "マイルストーン達成！", "completedEntireJourney": "{{name}}の旅を全て完了しました！", "nextMilestone": "次：{{name}}（あと{{count}}タスク）", "startingPoint": "出発点", "milestonesCount": "マイルストーン", "completedCheck": "完了 ✓", "journeyBadges": "旅のバッジ", "viewAll": "すべて表示", "certificate": "証明書", "history": "履歴", "journeysCompleted": "{{count}}つの旅を完了", "badgesCount": "{{count}}個のバッジ",
+    "nile": { "name": "ナイル川航海", "description": "世界最長の川を6,650km旅する" },
+    "silk_road": { "name": "シルクロード", "description": "中国から地中海への古代交易路を辿る" },
+    "everest": { "name": "エベレスト登頂", "description": "ベースキャンプから世界最高峰の頂上へ" },
+    "pacific": { "name": "太平洋横断", "description": "東京からサンフランシスコへ航海" },
+    "amazon": { "name": "アマゾン探検", "description": "世界最大の熱帯雨林を冒険" },
+    "space": { "name": "火星への旅", "description": "地球から発射し赤い惑星に着陸" }
+  },
+  "certificates": {
+    "title": "証明書", "loading": "証明書を読み込み中...", "description": "タスク完了、連続記録維持、ノート作成、フォルダ使用で証明書を獲得。LinkedInで共有しよう！", "unlocked": "解除済", "certificateUnlocked": "🎉 証明書解除！", "certificateOfAchievement": "達成証明書", "awardedTo": "授与先", "yourName": "あなたの名前", "scanToDownload": "アプリダウンロードはスキャン", "notYetAchieved": "まだ達成していません", "yourNameOnCertificate": "証明書に表示する名前", "enterYourName": "名前を入力", "nameOnSharedImage": "この名前が共有される証明書画像に表示されます", "requirements": "要件", "tasksCompleted": "完了タスク", "streakDays": "連続日数", "notesCreated": "作成ノート", "foldersUsed": "使用フォルダ", "certificateStatement": "証明書の説明", "shareOnSocialMedia": "SNSで共有", "shareDescription": "証明書画像をダウンロードしてLinkedIn、Instagram、Twitterで共有！", "shareCertificate": "証明書を共有", "generatingImage": "画像生成中...", "linkedInPost": "LinkedIn投稿", "readyToPaste": "貼り付け準備完了", "copied": "コピー済！", "copyForLinkedIn": "LinkedIn用にコピー", "completeRequirements": "共有を解除するには全ての要件を完了してください", "allCertificates": "← すべての証明書", "viewCertificate": "証明書を見る", "dedicationPaidOff": "あなたの努力が実りました。{{title}}証明書を獲得しました！", "tasks": "タスク", "streak": "連続", "notes": "ノート", "tasksCompletedInDays": "{{tasks}}+タスクを{{days}}+日で完了",
+    "beginner": { "title": "初心者", "subtitle": "最初の一歩" }, "achiever": { "title": "達成者", "subtitle": "勢いをつける" }, "expert": { "title": "エキスパート", "subtitle": "実証された規律" }, "champion": { "title": "チャンピオン", "subtitle": "エリートパフォーマンス" }, "master": { "title": "マスター", "subtitle": "伝説的地位" }, "legend": { "title": "365日", "subtitle": "一年間の規律" }, "immortal": { "title": "1000日", "subtitle": "不滅の生産性" }
+  },
+  "achievementItems": {
+    "streak_3": { "name": "スタート", "description": "3日間の連続記録を維持" }, "streak_7": { "name": "ウィークウォリアー", "description": "7日間の連続記録を維持" }, "streak_14": { "name": "2週間チャンピオン", "description": "14日間の連続記録を維持" }, "streak_30": { "name": "月間マスター", "description": "30日間の連続記録を維持" }, "streak_60": { "name": "止められない", "description": "60日間の連続記録を維持" }, "streak_100": { "name": "センチュリークラブ", "description": "100日間の連続記録を維持" }, "streak_365": { "name": "献身の年", "description": "365日間の連続記録を維持" },
+    "tasks_10": { "name": "最初の一歩", "description": "10タスク完了" }, "tasks_50": { "name": "タスク征服者", "description": "50タスク完了" }, "tasks_100": { "name": "センチュリー達成者", "description": "100タスク完了" }, "tasks_500": { "name": "タスクマシン", "description": "500タスク完了" }, "tasks_1000": { "name": "タスクレジェンド", "description": "1000タスク完了" },
+    "daily_5": { "name": "生産的な日", "description": "1日で5タスク完了" }, "daily_10": { "name": "超生産的", "description": "1日で10タスク完了" }, "daily_20": { "name": "生産性モンスター", "description": "1日で20タスク完了" },
+    "early_bird": { "name": "早起き鳥", "description": "午前6時前にタスクを完了" }, "night_owl": { "name": "夜更かしフクロウ", "description": "深夜12時以降にタスクを完了" }, "weekend_warrior": { "name": "週末ウォリアー", "description": "土曜と日曜の両方でタスクを完了" }, "freeze_collector": { "name": "フリーズコレクター", "description": "5つの連続フリーズを獲得" },
+    "unlocked": "解除！🎉"
   }
 }
