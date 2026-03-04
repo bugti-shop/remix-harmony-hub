@@ -2356,7 +2356,15 @@
     "textHighlighted": "متن نمایاں ہوا",
     "textAnnotationCreated": "متن تشریح بنائی گئی",
     "highlightedMatches": "{{count}} مماثلتیں نمایاں",
-    "symmetryEnabled": "{{mode}} ہم آہنگی فعال"
+    "symmetryEnabled": "{{mode}} ہم آہنگی فعال",
+    "pdfClosed": "PDF بند", "scribbleErase": "خراش مٹانا", "fileReady": "{{filename}} تیار", "exportingTimelapse": "ٹائم لیپس ویڈیو برآمد ہو رہی ہے...", "audioDiscarded": "آڈیو ریکارڈنگ حذف", "typeHere": "یہاں لکھیں...", "tapToPlaceSticky": "چپکنے والا نوٹ لگانے کے لیے کینوس پر ٹیپ کریں", "doubleClickToDelete": "{{name}} (حذف کے لیے ڈبل کلک)", "rightClickToRemove": "{{color}} (ہٹانے کے لیے رائٹ کلک)", "on": "آن", "shareSketch": "خاکہ شیئر کریں", "saveShare": "محفوظ / شیئر", "pressureOpacity": "دباؤ دھندلاپن",
+    "highlightColors": { "yellow": "پیلا", "green": "سبز", "blue": "نیلا", "pink": "گلابی", "orange": "نارنجی", "purple": "بنفشی" },
+    "shapes": { "line": "لکیر", "rect": "مستطیل", "circle": "دائرہ", "arrow": "تیر", "triangle": "مثلث", "star": "ستارہ", "diamond": "ہیرا", "polygon": "مسدس", "pentagon": "مخمس", "heart": "دل", "moon": "چاند", "cloud": "بادل", "speechBubble": "مکالمہ بلبلہ", "cylinder": "سلنڈر", "trapezoid": "سمانتر", "cone": "مخروط" },
+    "drawTools": { "pencil": "پنسل", "pen": "قلم", "fountain": "فاؤنٹین", "marker": "مارکر", "highlighter": "ہائی لائٹر", "calligraphy": "خطاطی", "crayon": "کریون", "watercolor": "آبی رنگ", "spray": "سپرے", "dotpen": "نقطہ قلم", "neon": "نیون", "textHighlight": "نمایاں" },
+    "backgrounds": { "plain": "سادہ", "grid-sm": "چھوٹی گرڈ", "grid-lg": "بڑی گرڈ", "graph-sm": "گراف پیپر", "dotted": "نقطے دار", "dotted-grid": "نقطے دار گرڈ", "ruled": "لائن دار", "music-staff": "موسیقی اسٹاف", "isometric": "آئسومیٹرک", "dark": "گہرا" },
+    "blendModes": { "normal": "عام", "multiply": "ضرب", "screen": "اسکرین", "overlay": "اوورلے", "soft-light": "نرم روشنی" },
+    "stickers": { "arrowRight": "دایاں تیر", "arrowDiagonal": "ترچھا تیر", "checkmark": "ٹک", "cross": "کراس", "star": "ستارہ", "leftBracket": "بایاں قوسین", "rightBracket": "دایاں قوسین", "heart": "دل", "circle": "دائرہ", "underline": "خط کشیدہ", "banner": "بینر", "speech": "تقریر", "thought": "سوچ", "lightning": "بجلی", "crown": "تاج", "flame": "شعلہ", "sun": "سورج", "music": "موسیقی", "alert": "انتباہ", "pin": "پن", "flower": "پھول", "cloud": "بادل" },
+    "emojiCategories": { "faces": "چہرے", "hands": "ہاتھ", "hearts": "دل", "nature": "فطرت", "food": "کھانا", "objects": "اشیاء", "symbols": "علامات", "animals": "جانور" }
   },
   "sketchVideo": {
     "invalidYoutubeUrl": "غلط یوٹیوب لنک",

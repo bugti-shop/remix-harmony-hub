@@ -2860,7 +2860,15 @@
     "textHighlighted": "टेक्स्ट हाइलाइट हुआ",
     "textAnnotationCreated": "टेक्स्ट एनोटेशन बनाई गई",
     "highlightedMatches": "{{count}} मैच हाइलाइट किए",
-    "symmetryEnabled": "{{mode}} सममिति सक्षम"
+    "symmetryEnabled": "{{mode}} सममिति सक्षम",
+    "pdfClosed": "PDF बंद", "scribbleErase": "स्क्रिबल मिटाना", "fileReady": "{{filename}} तैयार", "exportingTimelapse": "टाइमलैप्स वीडियो निर्यात हो रहा है...", "audioDiscarded": "ऑडियो रिकॉर्डिंग हटाई गई", "typeHere": "यहाँ लिखें...", "tapToPlaceSticky": "स्टिकी नोट लगाने के लिए कैनवास पर टैप करें", "doubleClickToDelete": "{{name}} (हटाने के लिए डबल क्लिक)", "rightClickToRemove": "{{color}} (हटाने के लिए राइट क्लिक)", "on": "चालू", "shareSketch": "स्केच साझा करें", "saveShare": "सहेजें / साझा करें", "pressureOpacity": "दबाव अपारदर्शिता",
+    "highlightColors": { "yellow": "पीला", "green": "हरा", "blue": "नीला", "pink": "गुलाबी", "orange": "नारंगी", "purple": "बैंगनी" },
+    "shapes": { "line": "रेखा", "rect": "आयत", "circle": "वृत्त", "arrow": "तीर", "triangle": "त्रिभुज", "star": "तारा", "diamond": "हीरा", "polygon": "षट्भुज", "pentagon": "पंचभुज", "heart": "दिल", "moon": "चाँद", "cloud": "बादल", "speechBubble": "संवाद बुलबुला", "cylinder": "बेलन", "trapezoid": "समलंब", "cone": "शंकु" },
+    "drawTools": { "pencil": "पेंसिल", "pen": "कलम", "fountain": "फाउंटेन", "marker": "मार्कर", "highlighter": "हाइलाइटर", "calligraphy": "सुलेख", "crayon": "क्रेयॉन", "watercolor": "जलरंग", "spray": "स्प्रे", "dotpen": "डॉट पेन", "neon": "नियॉन", "textHighlight": "हाइलाइट" },
+    "backgrounds": { "plain": "सादा", "grid-sm": "छोटी ग्रिड", "grid-lg": "बड़ी ग्रिड", "graph-sm": "ग्राफ पेपर", "dotted": "बिंदीदार", "dotted-grid": "बिंदीदार ग्रिड", "ruled": "लाइनदार", "music-staff": "संगीत स्टाफ", "isometric": "आइसोमेट्रिक", "dark": "गहरा" },
+    "blendModes": { "normal": "सामान्य", "multiply": "गुणा", "screen": "स्क्रीन", "overlay": "ओवरले", "soft-light": "मृदु प्रकाश" },
+    "stickers": { "arrowRight": "दायाँ तीर", "arrowDiagonal": "तिरछा तीर", "checkmark": "सही का निशान", "cross": "क्रॉस", "star": "तारा", "leftBracket": "बायाँ कोष्ठक", "rightBracket": "दायाँ कोष्ठक", "heart": "दिल", "circle": "वृत्त", "underline": "रेखांकन", "banner": "बैनर", "speech": "भाषण", "thought": "विचार", "lightning": "बिजली", "crown": "मुकुट", "flame": "लौ", "sun": "सूरज", "music": "संगीत", "alert": "चेतावनी", "pin": "पिन", "flower": "फूल", "cloud": "बादल" },
+    "emojiCategories": { "faces": "चेहरे", "hands": "हाथ", "hearts": "दिल", "nature": "प्रकृति", "food": "खाना", "objects": "वस्तुएँ", "symbols": "प्रतीक", "animals": "जानवर" }
   },
   "sketchVideo": {
     "invalidYoutubeUrl": "अमान्य YouTube लिंक",
