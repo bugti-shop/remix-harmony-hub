@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +30,7 @@ interface SketchNotebookLibraryProps {
 export function SketchNotebookLibrary({
   onOpenPage, onCreateNewSketch, currentNoteId, className,
 }: SketchNotebookLibraryProps) {
+  const { t } = useTranslation();
   const [notebooks, setNotebooks] = useState<SketchNotebook[]>([]);
   const [folders, setFolders] = useState<SketchFolder[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export function SketchNotebookLibrary({
     persistNotebooks([...notebooks, nb]);
     setNewNotebookName('');
     setShowNewNotebook(false);
-    toast.success('Notebook created');
+    toast.success(t('sketchLibrary.notebookCreated'));
   }, [newNotebookName, currentFolderId, notebooks, persistNotebooks]);
 
   const handleCreateFolder = useCallback(() => {
@@ -109,7 +111,7 @@ export function SketchNotebookLibrary({
     persistFolders([...folders, f]);
     setNewFolderName('');
     setShowNewFolder(false);
-    toast.success('Folder created');
+    toast.success(t('sketchLibrary.folderCreated'));
   }, [newFolderName, currentFolderId, folders, persistFolders]);
 
   const handleRename = useCallback((id: string, type: 'notebook' | 'folder') => {
@@ -129,7 +131,7 @@ export function SketchNotebookLibrary({
 
   const handleDeleteNotebook = useCallback((id: string) => {
     persistNotebooks(notebooks.filter(nb => nb.id !== id));
-    toast('Notebook deleted');
+    toast(t('sketchLibrary.notebookDeleted'));
   }, [notebooks, persistNotebooks]);
 
   const handleDeleteFolder = useCallback((id: string) => {
@@ -142,7 +144,7 @@ export function SketchNotebookLibrary({
     persistNotebooks(notebooks.map(nb =>
       nb.folderId === id ? { ...nb, folderId: parentId } : nb
     ));
-    toast('Folder deleted');
+    toast(t('sketchLibrary.folderDeleted'));
   }, [folders, notebooks, persistFolders, persistNotebooks]);
 
   const handleMoveNotebook = useCallback((notebookId: string, targetFolderId: string | null) => {
@@ -150,7 +152,7 @@ export function SketchNotebookLibrary({
       nb.id === notebookId ? { ...nb, folderId: targetFolderId || undefined, updatedAt: new Date() } : nb
     ));
     setMovingNotebookId(null);
-    toast.success('Notebook moved');
+    toast.success(t('sketchLibrary.notebookMoved'));
   }, [notebooks, persistNotebooks]);
 
   // Focus on rename/new inputs
@@ -170,7 +172,7 @@ export function SketchNotebookLibrary({
       {/* Header */}
       <div className="flex-shrink-0 px-4 pt-4 pb-2 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-foreground">Sketch Library</h2>
+          <h2 className="text-lg font-bold text-foreground">{t('sketchLibrary.title')}</h2>
           <div className="flex items-center gap-1">
             <Button
               variant="ghost" size="icon" className="h-8 w-8"
@@ -185,7 +187,7 @@ export function SketchNotebookLibrary({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search notebooks & pages..."
+            placeholder={t('sketchLibrary.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 h-9 text-sm bg-muted/50 border-border/50"
@@ -203,7 +205,7 @@ export function SketchNotebookLibrary({
             className={cn('hover:text-foreground transition-colors whitespace-nowrap', !currentFolderId && 'text-foreground font-medium')}
             onClick={() => setCurrentFolderId(null)}
           >
-            Library
+            {t('sketchLibrary.library')}
           </button>
           {breadcrumb.map((f) => (
             <div key={f.id} className="flex items-center gap-1">
@@ -224,13 +226,13 @@ export function SketchNotebookLibrary({
             variant="outline" size="sm" className="h-8 text-xs gap-1.5"
             onClick={() => { setShowNewNotebook(true); setShowNewFolder(false); }}
           >
-            <Plus className="h-3.5 w-3.5" /> Notebook
+            <Plus className="h-3.5 w-3.5" /> {t('sketchLibrary.notebook')}
           </Button>
           <Button
             variant="outline" size="sm" className="h-8 text-xs gap-1.5"
             onClick={() => { setShowNewFolder(true); setShowNewNotebook(false); }}
           >
-            <FolderPlus className="h-3.5 w-3.5" /> Folder
+            <FolderPlus className="h-3.5 w-3.5" /> {t('sketchLibrary.folder')}
           </Button>
         </div>
 
@@ -239,7 +241,7 @@ export function SketchNotebookLibrary({
           <div className="flex items-center gap-2 animate-fade-in">
             <Input
               ref={newInputRef}
-              placeholder="Notebook name..."
+              placeholder={t('sketchLibrary.notebookNamePlaceholder')}
               value={newNotebookName}
               onChange={(e) => setNewNotebookName(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleCreateNotebook(); if (e.key === 'Escape') setShowNewNotebook(false); }}
@@ -255,7 +257,7 @@ export function SketchNotebookLibrary({
           <div className="flex items-center gap-2 animate-fade-in">
             <Input
               ref={newInputRef}
-              placeholder="Folder name..."
+              placeholder={t('sketchLibrary.folderNamePlaceholder')}
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleCreateFolder(); if (e.key === 'Escape') setShowNewFolder(false); }}
@@ -270,13 +272,13 @@ export function SketchNotebookLibrary({
       {/* Move notebook picker */}
       {movingNotebookId && (
         <div className="mx-4 mb-2 p-3 bg-primary/5 border border-primary/20 rounded-xl animate-fade-in">
-          <p className="text-xs font-medium text-foreground mb-2">Move to folder:</p>
+          <p className="text-xs font-medium text-foreground mb-2">{t('sketchLibrary.moveToFolder')}</p>
           <div className="space-y-1 max-h-40 overflow-y-auto">
             <button
               className="w-full text-left px-2 py-1.5 text-xs rounded-lg hover:bg-muted transition-colors"
               onClick={() => handleMoveNotebook(movingNotebookId, null)}
             >
-              📁 Root (no folder)
+              📁 {t('sketchLibrary.rootFolder')}
             </button>
             {folders.map(f => (
               <button
@@ -288,7 +290,7 @@ export function SketchNotebookLibrary({
               </button>
             ))}
           </div>
-          <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs w-full" onClick={() => setMovingNotebookId(null)}>Cancel</Button>
+          <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs w-full" onClick={() => setMovingNotebookId(null)}>{t('sketchLibrary.cancel')}</Button>
         </div>
       )}
 
@@ -298,10 +300,10 @@ export function SketchNotebookLibrary({
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <BookOpen className="h-12 w-12 mb-3 opacity-30" />
             <p className="text-sm font-medium">
-              {searchQuery ? 'No results found' : 'No notebooks yet'}
+              {searchQuery ? t('sketchLibrary.noResults') : t('sketchLibrary.noNotebooks')}
             </p>
             <p className="text-xs mt-1">
-              {searchQuery ? 'Try a different search' : 'Create a notebook to organize your sketches'}
+              {searchQuery ? t('sketchLibrary.tryDifferentSearch') : t('sketchLibrary.createNotebookHint')}
             </p>
           </div>
         ) : (
@@ -375,6 +377,7 @@ function FolderCard({
   onCancelRename: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const count = notebooks.filter(nb => nb.folderId === folder.id).length;
 
   return (
@@ -405,7 +408,7 @@ function FolderCard({
         ) : (
           <p className="text-sm font-medium text-foreground truncate">{folder.name}</p>
         )}
-        <p className="text-[10px] text-muted-foreground">{count} notebook{count !== 1 ? 's' : ''}</p>
+        <p className="text-[10px] text-muted-foreground">{count === 1 ? t('sketchLibrary.notebooks', { count }) : t('sketchLibrary.notebooks_plural', { count })}</p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -415,11 +418,11 @@ function FolderCard({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-36">
           <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStartRename(); }}>
-            <Pencil className="h-3.5 w-3.5 mr-2" /> Rename
+            <Pencil className="h-3.5 w-3.5 mr-2" /> {t('sketchLibrary.rename')}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(); }} className="text-destructive">
-            <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+            <Trash2 className="h-3.5 w-3.5 mr-2" /> {t('sketchLibrary.delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -446,6 +449,7 @@ function NotebookCard({
   onDelete: () => void;
   onMove: () => void;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const pageCount = notebook.pages.length;
   const hasCurrentPage = notebook.pages.some(p => p.noteId === currentNoteId);
@@ -493,7 +497,7 @@ function NotebookCard({
             <p className="text-sm font-medium text-foreground truncate">{notebook.name}</p>
           )}
           <p className="text-[10px] text-muted-foreground">
-            {pageCount} page{pageCount !== 1 ? 's' : ''} · {new Date(notebook.updatedAt).toLocaleDateString()}
+            {pageCount === 1 ? t('sketchLibrary.pages', { count: pageCount }) : t('sketchLibrary.pages_plural', { count: pageCount })} · {new Date(notebook.updatedAt).toLocaleDateString()}
           </p>
         </div>
 
@@ -507,17 +511,17 @@ function NotebookCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCreatePage(); }}>
-                <Plus className="h-3.5 w-3.5 mr-2" /> Add page
+                <Plus className="h-3.5 w-3.5 mr-2" /> {t('sketchLibrary.addPage')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStartRename(); }}>
-                <Pencil className="h-3.5 w-3.5 mr-2" /> Rename
+                <Pencil className="h-3.5 w-3.5 mr-2" /> {t('sketchLibrary.rename')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onMove(); }}>
-                <MoveRight className="h-3.5 w-3.5 mr-2" /> Move
+                <MoveRight className="h-3.5 w-3.5 mr-2" /> {t('sketchLibrary.move')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(); }} className="text-destructive">
-                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> {t('sketchLibrary.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -529,9 +533,9 @@ function NotebookCard({
         <div className="border-t border-border/30 bg-muted/20 animate-fade-in">
           {notebook.pages.length === 0 ? (
             <div className="px-3 py-4 text-center">
-              <p className="text-xs text-muted-foreground mb-2">No pages yet</p>
+              <p className="text-xs text-muted-foreground mb-2">{t('sketchLibrary.noPagesYet')}</p>
               <Button variant="outline" size="sm" className="h-7 text-xs" onClick={onCreatePage}>
-                <Plus className="h-3 w-3 mr-1" /> Add first page
+                <Plus className="h-3 w-3 mr-1" /> {t('sketchLibrary.addFirstPage')}
               </Button>
             </div>
           ) : (
@@ -555,7 +559,7 @@ function NotebookCard({
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{page.title || 'Untitled'}</p>
+                    <p className="text-xs font-medium truncate">{page.title || t('sketchLibrary.untitled')}</p>
                     <p className="text-[9px] text-muted-foreground">{new Date(page.updatedAt).toLocaleDateString()}</p>
                   </div>
                 </button>
@@ -564,7 +568,7 @@ function NotebookCard({
                 className="w-full flex items-center gap-2 px-4 py-2 hover:bg-muted/60 transition-colors text-xs text-muted-foreground"
                 onClick={onCreatePage}
               >
-                <Plus className="h-3 w-3" /> Add page
+                <Plus className="h-3 w-3" /> {t('sketchLibrary.addPage')}
               </button>
             </div>
           )}
