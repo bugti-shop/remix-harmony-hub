@@ -3742,10 +3742,10 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         redrawRef.current();
       };
       
-      toast.success(`📄 PDF loaded — ${numPages} page${numPages > 1 ? 's' : ''}`, { id: 'pdf-load' });
+      toast.success(t('sketch.pdfLoaded', { pages: `${numPages}` }), { id: 'pdf-load' });
     } catch (error) {
       console.error('PDF import error:', error);
-      toast.error('Failed to load PDF', { id: 'pdf-load' });
+      toast.error(t('sketch.pdfLoadFailed'), { id: 'pdf-load' });
     }
   }, []);
 
@@ -5734,7 +5734,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             const cleanStroke = convertToCleanShape(finishedStroke, recognized);
             if (cleanStroke) {
               strokeToAdd = cleanStroke;
-              toast.success(`✨ ${recognized.type.charAt(0).toUpperCase() + recognized.type.slice(1)} detected!`, { duration: 1500 });
+              toast.success(`✨ ${t('sketch.shapeDetected', { shape: recognized.type.charAt(0).toUpperCase() + recognized.type.slice(1) })}`, { duration: 1500 });
             }
           }
         }
@@ -6020,7 +6020,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         toast.success(`${filename} ready`);
       } catch (e) {
         console.error('Native save/share failed:', e);
-        toast.error('Export failed');
+        toast.error(t('sketch.exportFailed'));
       }
     } else {
       // Web fallback
@@ -6174,11 +6174,11 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
       if (pdf) {
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
         await nativeSaveAndShare(pdfBase64, 'annotated.pdf', 'application/pdf');
-        toast.success('📄 Annotated PDF exported!', { id: 'pdf-export' });
+        toast.success(`📄 ${t('sketch.annotatedPdfExported')}`, { id: 'pdf-export' });
       }
     } catch (error) {
       console.error('Annotated PDF export error:', error);
-      toast.error('Export failed', { id: 'pdf-export' });
+      toast.error(t('sketch.exportFailed'), { id: 'pdf-export' });
     }
   }, [nativeSaveAndShare, pdfPages, pdfPageIndex, pdfPageDimensions, pdfAnnotations, getOrLoadImage]);
 
@@ -6298,11 +6298,11 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
     if (isTimelapseRecording) {
       setIsTimelapseRecording(false);
       timelapseRecordStartRef.current = 0;
-      toast.success('🎬 Timelapse recording stopped!');
+      toast.success(`🎬 ${t('sketch.timelapseRecordingStopped')}`);
     } else {
       timelapseRecordStartRef.current = Date.now();
       setIsTimelapseRecording(true);
-      toast.success('🎬 Timelapse recording started — draw away!');
+      toast.success(`🎬 ${t('sketch.timelapseRecordingStarted')}`);
     }
   }, [isTimelapseRecording]);
 
@@ -6358,7 +6358,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
       }
     }
     if (allStrokes.length === 0) {
-      toast.error('No strokes to export');
+      toast.error(t('sketch.noStrokesToExport'));
       return;
     }
 
@@ -6443,13 +6443,13 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         URL.revokeObjectURL(url);
       }
 
-      toast.success('🎬 Timelapse video exported!');
+      toast.success(`🎬 ${t('sketch.timelapseExported')}`);
     } catch (err) {
       console.error('Timelapse export failed:', err);
       // Restore on error
       layersRef.current.splice(0, layersRef.current.length, ...savedLayers);
       redrawAll();
-      toast.error('Failed to export timelapse video');
+      toast.error(t('sketch.timelapseExportFailed'));
     } finally {
       setIsExportingTimelapse(false);
     }
@@ -6498,10 +6498,10 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         audioRecordingTimeRef.current += 1;
         setAudioRecordingTime(prev => prev + 1);
       }, 1000);
-      toast.success('🎙️ Audio recording started — draw to sync!');
+      toast.success(`🎙️ ${t('sketch.audioRecordingStarted')}`);
     } catch (error) {
       console.error('Microphone access denied:', error);
-      toast.error('Microphone access denied');
+      toast.error(t('sketch.microphoneAccessDenied'));
     }
   }, []);
 
@@ -6513,7 +6513,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         clearInterval(audioTimerRef.current);
         audioTimerRef.current = null;
       }
-      toast.success('🎙️ Audio recording saved!');
+      toast.success(`🎙️ ${t('sketch.audioRecordingSavedToast')}`);
     }
   }, [isAudioRecording]);
 
@@ -6604,7 +6604,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
     }
 
     if (!audioDataUrlRef.current) {
-      toast.error('No audio recording to play');
+      toast.error(t('sketch.noAudioRecording'));
       return;
     }
 
@@ -6628,7 +6628,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
     }
 
     if (syncedStrokes.length === 0) {
-      toast.error('No synced strokes found');
+      toast.error(t('sketch.noSyncedStrokes'));
       return;
     }
 
@@ -6816,7 +6816,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
     const updated = [...savedStickers, newSticker];
     setSavedStickers(updated);
     saveStickersToDisk(updated);
-    toast.success('Saved as sticker!');
+    toast.success(t('sketch.savedAsSticker'));
   }, [getSelectedStrokes, savedStickers]);
 
   const handlePasteSticker = useCallback((sticker: StickerElement) => {
@@ -7318,22 +7318,22 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         {/* Eyedropper mode indicator */}
         {eyedropperActive && (
           <div className="absolute top-2 left-2 bg-primary text-primary-foreground rounded-lg px-2 py-1 text-[10px] flex items-center gap-1">
-            <Pipette className="h-3 w-3" />Tap to pick color
+            <Pipette className="h-3 w-3" />{t('sketch.tapToPickColor')}
           </div>
         )}
         {/* Selection floating actions */}
         {hasSelection && tool === 'select' && (
           <div className="absolute top-2 left-2 bg-card/95 backdrop-blur-sm border border-border rounded-lg px-1 py-1 flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopySelection} title="Copy">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopySelection} title={t('sketch.copy')}>
               <Copy className="h-3.5 w-3.5" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handlePasteSelection} title="Paste">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handlePasteSelection} title={t('sketch.paste')}>
               <Clipboard className="h-3.5 w-3.5" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={handleDeleteSelection} title="Delete">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={handleDeleteSelection} title={t('sketch.delete')}>
               <Trash className="h-3.5 w-3.5" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-primary" onClick={handleSaveAsSticker} title="Save as Sticker">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-primary" onClick={handleSaveAsSticker} title={t('sketch.saveAsSticker')}>
               <BookmarkPlus className="h-3.5 w-3.5" />
             </Button>
             {/* Clip mask toggle for selected shape strokes */}
@@ -7361,7 +7361,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     redrawAll();
                     emitChange();
                   }}
-                  title={allClipped ? "Remove Clip Mask" : "Set as Clip Mask"}
+                  title={allClipped ? t('sketch.removeClipMask') : t('sketch.setAsClipMask')}
                 >
                   <ScissorsLineDashed className="h-3.5 w-3.5" />
                 </Button>
@@ -7380,7 +7380,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 handleStickyDoubleTap(selectedStickyId);
                 setSelectedStickyId(null);
               }}
-              title="Edit sticky note"
+              title={t('sketch.editStickyNote')}
             >
               <Pencil className="h-3.5 w-3.5" />
             </Button>
@@ -7392,7 +7392,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 handleDeleteStickyNote(selectedStickyId);
                 setSelectedStickyId(null);
               }}
-              title="Delete sticky note"
+              title={t('sketch.deleteStickyNote')}
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
@@ -7416,7 +7416,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 redrawAll();
                 emitChange();
               }}
-              title="Delete tape"
+              title={t('sketch.deleteTape')}
             >
               <Trash className="h-3.5 w-3.5" />
             </Button>
@@ -7433,9 +7433,9 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               size="icon"
               className="h-7 w-7"
               onClick={() => {
-                navigator.clipboard.writeText(pdfSelectedText).then(() => toast.success('Text copied'));
+                navigator.clipboard.writeText(pdfSelectedText).then(() => toast.success(t('sketch.textCopied')));
               }}
-              title="Copy to clipboard"
+              title={t('sketch.copyToClipboard')}
             >
               <Copy className="h-3.5 w-3.5" />
             </Button>
@@ -7494,9 +7494,9 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 setPdfTextSelectionRects([]);
                 redrawAll();
                 emitChange();
-                toast.success('Text highlighted');
+                toast.success(t('sketch.textHighlighted'));
               }}
-              title="Highlight selected text"
+              title={t('sketch.highlightSelectedText')}
             >
               <Highlighter className="h-3.5 w-3.5" />
             </Button>
@@ -7530,9 +7530,9 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 setPdfTextSelectionRects([]);
                 redrawAll();
                 emitChange();
-                toast.success('Text annotation created');
+                toast.success(t('sketch.textAnnotationCreated'));
               }}
-              title="Create text annotation"
+              title={t('sketch.createTextAnnotation')}
             >
               <Type className="h-3.5 w-3.5" />
             </Button>
@@ -7545,7 +7545,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 setPdfTextSelectionRects([]);
                 redrawAll();
               }}
-              title="Clear selection"
+              title={t('sketch.clearSelection')}
             >
               <Trash className="h-3.5 w-3.5" />
             </Button>
@@ -7557,7 +7557,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
             <input
               type="text"
-              placeholder="Search PDF text..."
+              placeholder={t('sketch.searchPdfText')}
               value={pdfSearchQuery}
               onChange={(e) => {
                 const q = e.target.value;
@@ -7578,7 +7578,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               autoFocus
             />
             {pdfSearchMatchRects.length > 0 && (
-              <span className="text-[10px] text-muted-foreground whitespace-nowrap">{pdfSearchMatchRects.length} found</span>
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap">{pdfSearchMatchRects.length} {t('sketch.found')}</span>
             )}
             <Button
               variant="ghost"
@@ -7626,10 +7626,10 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   }
                   redrawAll();
                   emitChange();
-                  toast.success(`Highlighted ${pdfSearchMatchRects.length} matches`);
+                  toast.success(t('sketch.highlightedMatches', { count: pdfSearchMatchRects.length }));
                 }
               }}
-              title="Highlight all matches"
+              title={t('sketch.highlightAllMatches')}
             >
               <Highlighter className="h-3 w-3" />
             </Button>
@@ -7647,7 +7647,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             size="icon"
             className="absolute top-2 right-2 h-8 w-8 bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm z-50"
             onClick={() => setShowPdfSearch(true)}
-            title="Search PDF text"
+            title={t('sketch.searchPdf')}
           >
             <Search className="h-4 w-4" />
           </Button>
@@ -7716,7 +7716,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   }}
                   className="w-full bg-transparent border-none outline-none resize-none p-2.5 text-[#1a1a1a]"
                   style={{ fontSize: sn.fontSize * zoom, height: `calc(100% - 28px)` }}
-                  placeholder="Type on sticky..."
+                  placeholder={t('sketch.typeOnSticky')}
                 />
                 <div className="absolute top-1 right-1 flex gap-1">
                   <button
@@ -7876,7 +7876,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   audioLoopBRef.current = null;
                 }
               }}
-              title={audioLoopEnabled ? "Disable loop" : "Enable loop"}
+              title={audioLoopEnabled ? t('sketch.disableLoop') : t('sketch.enableLoop')}
             >
               <Repeat className="h-3.5 w-3.5" />
             </button>
@@ -7898,7 +7898,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                       audioLoopARef.current = audioScrubTime;
                     }
                   }}
-                  title={audioLoopA != null ? "Clear A marker" : "Set A marker at current position"}
+                  title={audioLoopA != null ? t('sketch.clearAMarker') : t('sketch.setAMarker')}
                 >
                   A
                 </button>
@@ -7917,7 +7917,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                       audioLoopBRef.current = bVal;
                     }
                   }}
-                  title={audioLoopB != null ? "Clear B marker" : "Set B marker at current position"}
+                  title={audioLoopB != null ? t('sketch.clearBMarker') : t('sketch.setBMarker')}
                 >
                   B
                 </button>
@@ -7928,7 +7928,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <button
               className="h-7 w-7 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors active:scale-95"
               onClick={handleAudioSyncPlayback}
-              title="Stop"
+              title={t('sketch.stop')}
             >
               <StopSquare className="h-3.5 w-3.5" />
             </button>
@@ -7945,8 +7945,8 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               />
             </div>
           )}
-          <p className="text-[9px] text-muted-foreground mt-1 text-center">
-            Drag to scrub • Tap stroke to jump • {audioLoopEnabled ? 'Loop ON' : 'Loop OFF'}
+           <p className="text-[9px] text-muted-foreground mt-1 text-center">
+             {t('sketch.dragToScrub')} • {audioLoopEnabled ? t('sketch.loopOn') : t('sketch.loopOff')}
           </p>
         </div>
       )}
@@ -7956,7 +7956,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         <button
           className="absolute bottom-4 right-4 z-30 bg-card/90 backdrop-blur-sm border border-border/50 rounded-full p-3 shadow-lg text-foreground/70 hover:text-foreground hover:bg-card transition-all duration-200 active:scale-95"
           onClick={() => setFocusMode(false)}
-          title="Exit Focus Mode"
+          title={t('sketch.exitFocusMode')}
         >
           <Focus className="h-5 w-5" />
         </button>
@@ -7972,7 +7972,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               cursorHidden && "opacity-0 pointer-events-none"
             )}
             onClick={exitPresentationMode}
-            title="Exit Presentation Mode (Esc)"
+            title={t('sketch.exitPresentationMode')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -7980,7 +7980,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
           {tool === 'laser' && (
             <div className="absolute top-4 left-4 z-50 bg-card/70 backdrop-blur-sm border border-border/30 rounded-full px-3 py-1.5 flex items-center gap-2 animate-fade-in">
               <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse" />
-              <span className="text-[10px] font-medium text-foreground/70">Laser Pointer Active</span>
+              <span className="text-[10px] font-medium text-foreground/70">{t('sketch.laserPointerActive')}</span>
             </div>
           )}
           {/* Page indicator for PDF */}
@@ -8014,7 +8014,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               "absolute bottom-16 left-1/2 -translate-x-1/2 z-50 text-[10px] text-foreground/40 animate-fade-in transition-opacity duration-300",
               cursorHidden && "opacity-0"
             )}>
-              Swipe or use arrow keys to navigate
+              {t('sketch.swipeOrArrowKeys')}
             </div>
           )}
         </>
@@ -8025,7 +8025,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
         <div className="absolute right-0 top-0 bottom-0 w-72 z-40 bg-card/95 backdrop-blur-md border-l border-border shadow-2xl flex flex-col animate-fade-in">
           <div className="flex items-center justify-between px-3 py-2.5 border-b border-border/50">
             <span className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-              <Sticker className="h-4 w-4" /> Sticker Library
+              <Sticker className="h-4 w-4" /> {t('sketch.stickerLibrary')}
             </span>
             <button
               className="h-7 w-7 rounded-lg flex items-center justify-center text-foreground/60 hover:bg-muted/80 hover:text-foreground transition-colors"
@@ -8055,7 +8055,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
 
             {/* Decorative Built-in stickers */}
             <div>
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-1.5">Decorative</p>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-1.5">{t('sketch.decorative')}</p>
               <div className="grid grid-cols-4 gap-1.5">
                 {BUILT_IN_STICKERS.map(sticker => (
                   <button
@@ -8091,7 +8091,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             {/* Saved stickers */}
             {savedStickers.length > 0 && (
               <div>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-1.5">Saved</p>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-1.5">{t('sketch.yourStickers')}</p>
                 <div className="grid grid-cols-4 gap-1.5">
                   {savedStickers.map(sticker => (
                     <div key={sticker.id} className="relative group">
@@ -8123,7 +8123,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                       <button
                         className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => { e.stopPropagation(); handleDeleteSticker(sticker.id); }}
-                        title="Delete sticker"
+                        title={t('sketch.deleteSticker')}
                       >{"✕"}</button>
                     </div>
                   ))}
@@ -8132,8 +8132,8 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             )}
 
             {savedStickers.length === 0 && (
-              <p className="text-[10px] text-muted-foreground text-center px-3 py-4">
-                Select strokes and tap <BookmarkPlus className="inline h-3 w-3 -mt-0.5" /> to save as a reusable sticker.
+               <p className="text-[10px] text-muted-foreground text-center px-3 py-4">
+                 {t('sketch.stickerHint')} <BookmarkPlus className="inline h-3 w-3 -mt-0.5" />
               </p>
             )}
           </div>
@@ -8150,8 +8150,8 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
           <div className="flex items-center justify-between px-3 py-1.5 bg-muted/50 border-b border-border/50">
             <div className="flex items-center gap-2">
               <ZoomIn className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] font-semibold text-foreground">Zoom-to-Write</span>
-              <span className="text-[10px] text-muted-foreground">({ZOOM_WRITE_SCALE}x magnified)</span>
+               <span className="text-[10px] font-semibold text-foreground">{t('sketch.zoomToWrite')}</span>
+               <span className="text-[10px] text-muted-foreground">({ZOOM_WRITE_SCALE}x {t('sketch.magnified')})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Button
@@ -8175,7 +8175,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   if (zwCanvas) redrawZoomWriteBox(zwCanvas);
                 }}
               >
-                ↵ New Line
+                ↵ {t('sketch.newLine')}
               </Button>
               <Button
                 variant="ghost"
@@ -8183,7 +8183,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 className="h-6 text-[10px] px-2 text-destructive hover:text-destructive"
                 onClick={() => setZoomWriteActive(false)}
               >
-                ✕ Close
+                ✕ {t('sketch.close')}
               </Button>
             </div>
           </div>
@@ -8322,7 +8322,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
       {pdfPages.length === 1 && (
         <div className="absolute top-2 left-2 bg-card/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-[10px] text-muted-foreground flex items-center gap-1 z-10">
           <FileText className="h-3 w-3" />
-          PDF — 1 page
+          {t('sketch.pdfOnePage')}
         </div>
       )}
 
@@ -8383,7 +8383,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-3 bg-card/95 backdrop-blur-md border border-border/50 shadow-xl rounded-2xl" align="start" side="top">
-            <p className="text-[10px] font-semibold text-foreground mb-2">✨ Highlight Color</p>
+            <p className="text-[10px] font-semibold text-foreground mb-2">✨ {t('sketch.highlightColor')}</p>
             <div className="flex gap-2">
               {[
                 { c: '#FFEB3B', label: 'Yellow' },
@@ -8406,7 +8406,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               ))}
             </div>
             <div className="mt-2.5 pt-2 border-t border-border/30">
-              <p className="text-[10px] text-muted-foreground mb-1">Opacity: {Math.round(highlightOpacity * 100)}%</p>
+              <p className="text-[10px] text-muted-foreground mb-1">{t('sketch.opacity')}: {Math.round(highlightOpacity * 100)}%</p>
               <Slider min={10} max={80} step={5} value={[Math.round(highlightOpacity * 100)]} onValueChange={([v]) => setHighlightOpacity(v / 100)} />
             </div>
           </PopoverContent>
@@ -8427,7 +8427,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               setPdfSelectedText('');
               setPdfTextSelectionRects([]);
             }}
-            title="Select PDF Text"
+            title={t('sketch.selectPdfText')}
           >
             <FileText className="h-5 w-5" strokeWidth={tool === 'pdfTextSelect' ? 2.5 : 1.8} />
             <span className="absolute -bottom-0.5 -right-0.5 text-[7px] font-bold text-primary">T</span>
@@ -8453,7 +8453,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-3 bg-card" align="start" side="top">
-            <p className="text-[10px] font-medium text-foreground mb-2">Sticky Note Color</p>
+            <p className="text-[10px] font-medium text-foreground mb-2">{t('sketch.stickyNoteColor')}</p>
             <div className="flex gap-1.5 flex-wrap">
               {STICKY_COLORS.map(c => (
                 <button
@@ -8507,7 +8507,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-56 p-3 bg-card" align="start" side="top">
-            <p className="text-[10px] font-medium text-foreground mb-2">Washi Tape Pattern</p>
+            <p className="text-[10px] font-medium text-foreground mb-2">{t('sketch.washiTapePattern')}</p>
             <div className="grid grid-cols-5 gap-1.5">
               {WASHI_PATTERNS.map(p => (
                 <button
@@ -8532,7 +8532,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 </button>
               ))}
             </div>
-            <p className="text-[9px] text-muted-foreground mt-2">Draw freely on canvas like a pen</p>
+            <p className="text-[9px] text-muted-foreground mt-2">{t('sketch.washiHint')}</p>
           </PopoverContent>
         </Popover>
 
@@ -8601,27 +8601,27 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             {/* Brush Settings Panel */}
             {DRAW_TOOLS.some(d => d.id === tool) && (
               <div className="mt-2.5 pt-2.5 border-t border-border/30 space-y-2">
-                <p className="text-[10px] font-semibold text-foreground/80 flex items-center gap-1">
-                  <Brush className="h-3 w-3" />
-                  Brush Settings — {DRAW_TOOLS.find(d => d.id === tool)?.label}
+                 <p className="text-[10px] font-semibold text-foreground/80 flex items-center gap-1">
+                   <Brush className="h-3 w-3" />
+                   {t('sketch.brushSettings')} — {DRAW_TOOLS.find(d => d.id === tool)?.label}
                 </p>
                 <div>
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[9px] text-muted-foreground">Texture</span>
+                    <span className="text-[9px] text-muted-foreground">{t('sketch.texture')}</span>
                     <span className="text-[9px] font-mono text-muted-foreground">{Math.round(currentBrushSettings.textureIntensity * 100)}%</span>
                   </div>
                   <Slider min={0} max={100} step={5} value={[Math.round(currentBrushSettings.textureIntensity * 100)]} onValueChange={([v]) => updateBrushSetting('textureIntensity', v / 100)} />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[9px] text-muted-foreground">Grain Size</span>
+                    <span className="text-[9px] text-muted-foreground">{t('sketch.grainSize')}</span>
                     <span className="text-[9px] font-mono text-muted-foreground">{currentBrushSettings.grainSize.toFixed(1)}x</span>
                   </div>
                   <Slider min={20} max={300} step={10} value={[Math.round(currentBrushSettings.grainSize * 100)]} onValueChange={([v]) => updateBrushSetting('grainSize', v / 100)} />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[9px] text-muted-foreground">Wetness</span>
+                    <span className="text-[9px] text-muted-foreground">{t('sketch.wetness')}</span>
                     <span className="text-[9px] font-mono text-muted-foreground">{Math.round(currentBrushSettings.wetness * 100)}%</span>
                   </div>
                   <Slider min={0} max={100} step={5} value={[Math.round(currentBrushSettings.wetness * 100)]} onValueChange={([v]) => updateBrushSetting('wetness', v / 100)} />
@@ -8633,7 +8633,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     if (defaults) setBrushSettingsMap(prev => ({ ...prev, [tool]: { ...defaults } }));
                   }}
                 >
-                  Reset to defaults
+                  {t('sketch.resetToDefaults')}
                 </button>
               </div>
             )}
@@ -8687,12 +8687,12 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             </div>
             <div className="border-t border-border pt-2 space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] text-muted-foreground">Fill Color</p>
+                <p className="text-[10px] text-muted-foreground">{t('sketch.fillColor')}</p>
                 <button
                   className={cn('w-5 h-5 rounded border-2 transition-colors', fillEnabled ? 'border-primary' : 'border-border')}
                   style={{ backgroundColor: fillEnabled ? hexToRgba(fillColor, fillOpacity) : 'transparent' }}
                   onClick={() => setFillEnabled(!fillEnabled)}
-                  title={fillEnabled ? 'Disable fill' : 'Enable fill'}
+                  title={fillEnabled ? t('sketch.disableFill') : t('sketch.enableFill')}
                 />
               </div>
               {fillEnabled && (
@@ -8708,7 +8708,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     ))}
                   </div>
                   <div>
-                    <p className="text-[10px] text-muted-foreground mb-1">Fill Opacity: {Math.round(fillOpacity * 100)}%</p>
+                    <p className="text-[10px] text-muted-foreground mb-1">{t('sketch.fillOpacity')}: {Math.round(fillOpacity * 100)}%</p>
                     <Slider min={5} max={100} step={5} value={[Math.round(fillOpacity * 100)]} onValueChange={([v]) => setFillOpacity(v / 100)} />
                   </div>
                 </>
@@ -8738,18 +8738,18 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 maxLength={7}
               />
               <Button variant={eyedropperActive ? 'default' : 'outline'} size="icon" className="h-8 w-8 flex-shrink-0"
-                onClick={() => setEyedropperActive(!eyedropperActive)} title="Eyedropper"
+                onClick={() => setEyedropperActive(!eyedropperActive)} title={t('sketch.eyedropper')}
               >
                 <Pipette className="h-3.5 w-3.5" />
               </Button>
             </div>
             <div className="mb-2">
-              <p className="text-[10px] text-muted-foreground mb-1">Opacity: {Math.round(toolOpacity * 100)}%</p>
+              <p className="text-[10px] text-muted-foreground mb-1">{t('sketch.opacity')}: {Math.round(toolOpacity * 100)}%</p>
               <Slider min={5} max={100} step={5} value={[Math.round(toolOpacity * 100)]} onValueChange={([v]) => setToolOpacity(v / 100)} />
             </div>
             {recentColors.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground mb-1">Recent</p>
+                <p className="text-[10px] text-muted-foreground mb-1">{t('sketch.recent')}</p>
                 <div className="flex gap-1.5 flex-wrap">
                   {recentColors.map((c, i) => (
                     <button key={`${c}-${i}`}
@@ -8764,8 +8764,8 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             {/* Palette Manager */}
             <div className="mt-2 pt-2 border-t border-border">
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-[10px] font-medium text-foreground">Palettes</p>
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={addCurrentColorToPalette} title="Add current color to palette">
+                 <p className="text-[10px] font-medium text-foreground">{t('sketch.palettes')}</p>
+                 <Button variant="ghost" size="icon" className="h-5 w-5" onClick={addCurrentColorToPalette} title={t('sketch.addCurrentColor')}>
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>
@@ -8806,7 +8806,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   type="text"
                   value={newPaletteName}
                   onChange={(e) => setNewPaletteName(e.target.value)}
-                  placeholder="New palette..."
+                  placeholder={t('sketch.newPalette')}
                   className="flex-1 text-[10px] bg-muted rounded px-2 py-0.5 border border-border text-foreground"
                   onKeyDown={(e) => { if (e.key === 'Enter') createNewPalette(newPaletteName); }}
                 />
@@ -8837,7 +8837,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <button className="h-10 w-10 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-200 text-foreground/70 hover:bg-muted/80 hover:text-foreground active:scale-95"><Grid3X3 className="h-5 w-5" strokeWidth={1.8} /></button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-2 bg-card" align="center" side="top">
-            <p className="text-[10px] font-medium text-foreground mb-1.5 px-1">Background</p>
+            <p className="text-[10px] font-medium text-foreground mb-1.5 px-1">{t('sketch.background')}</p>
             <div className="grid grid-cols-4 gap-1">
               {BACKGROUNDS.map((bg) => (
                 <Button key={bg.id} variant={background === bg.id ? 'default' : 'ghost'} size="sm"
@@ -8848,12 +8848,12 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               <>
                 <div className="mt-2 pt-2 border-t border-border px-1">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] text-muted-foreground">Grid Color</span>
+                    <span className="text-[10px] text-muted-foreground">{t('sketch.gridColor')}</span>
                     <input type="color" value={gridColor} onChange={(e) => setGridColor(e.target.value)}
                       className="w-6 h-6 rounded border border-border cursor-pointer" style={{ padding: 0 }} />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-muted-foreground">Opacity: {Math.round(gridOpacity * 100)}%</span>
+                    <span className="text-[10px] text-muted-foreground">{t('sketch.opacity')}: {Math.round(gridOpacity * 100)}%</span>
                   </div>
                   <Slider min={5} max={100} step={5} value={[Math.round(gridOpacity * 100)]}
                     onValueChange={([v]) => setGridOpacity(v / 100)} className="mt-1" />
@@ -8861,7 +8861,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               </>
             )}
             <div className="mt-2 pt-2 border-t border-border flex items-center justify-between px-1">
-              <span className="text-[10px] text-muted-foreground">Snap to Grid</span>
+              <span className="text-[10px] text-muted-foreground">{t('sketch.snapToGrid')}</span>
               <Button variant={snapEnabled ? 'default' : 'outline'} size="sm" className="h-6 text-[10px] px-2"
                 onClick={() => setSnapEnabled(!snapEnabled)}>{snapEnabled ? 'ON' : 'OFF'}</Button>
             </div>
@@ -8874,7 +8874,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <button className="h-10 w-10 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-200 text-foreground/70 hover:bg-muted/80 hover:text-foreground active:scale-95"><Layers className="h-5 w-5" strokeWidth={1.8} /></button>
           </PopoverTrigger>
           <PopoverContent className="w-56 p-3 bg-card" align="center" side="top">
-            <p className="text-xs font-medium text-foreground mb-2">Layers</p>
+            <p className="text-xs font-medium text-foreground mb-2">{t('sketch.layers')}</p>
             <div className="flex flex-col gap-2">
               {[...layers].reverse().map((layer) => (
                 <div key={layer.id}
@@ -8893,8 +8893,8 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               ))}
             </div>
             <div className="mt-3 pt-2 border-t border-border">
-              <p className="text-[10px] text-muted-foreground mb-1.5">
-                Opacity: {Math.round((layers.find(l => l.id === activeLayerId)?.opacity ?? 1) * 100)}%
+               <p className="text-[10px] text-muted-foreground mb-1.5">
+                 {t('sketch.opacity')}: {Math.round((layers.find(l => l.id === activeLayerId)?.opacity ?? 1) * 100)}%
               </p>
               <Slider min={0} max={100} step={5}
                 value={[Math.round((layers.find(l => l.id === activeLayerId)?.opacity ?? 1) * 100)]}
@@ -8902,7 +8902,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               />
             </div>
             <div className="mt-2 pt-2 border-t border-border">
-              <p className="text-[10px] text-muted-foreground mb-1.5">Blend Mode</p>
+              <p className="text-[10px] text-muted-foreground mb-1.5">{t('sketch.blendMode')}</p>
               <div className="flex flex-wrap gap-1">
                 {BLEND_MODE_OPTIONS.map((bm) => (
                   <button
@@ -8938,7 +8938,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-2 bg-card" align="center" side="top">
-            <p className="text-[10px] font-medium text-foreground mb-1.5 px-1">Symmetry Mode</p>
+            <p className="text-[10px] font-medium text-foreground mb-1.5 px-1">{t('sketch.symmetryMode')}</p>
             <div className="flex flex-col gap-1">
               {([
                 { id: 'off' as const, label: 'Off', axes: 0 },
@@ -8951,7 +8951,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   variant={symmetryMode === s.id ? 'default' : 'ghost'}
                   size="sm"
                   className="h-8 text-xs justify-start gap-2 px-2"
-                  onClick={() => { setSymmetryMode(s.id); setOpenToolbarPopover(null); if (s.id !== 'off') toast.success(`✨ ${s.label} symmetry enabled`); }}
+                  onClick={() => { setSymmetryMode(s.id); setOpenToolbarPopover(null); if (s.id !== 'off') toast.success(`✨ ${t('sketch.symmetryEnabled', { mode: s.label })}` ); }}
                 >
                   {s.axes > 0 ? (
                     <svg className="h-3.5 w-3.5" viewBox="0 0 16 16">
@@ -8992,7 +8992,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 onClick={() => { setShowRulers(!showRulers); setOpenToolbarPopover(null); }}
               >
                 <Grid3X3 className="h-3.5 w-3.5" />
-                {showRulers ? 'Hide Pixel Rulers' : 'Show Pixel Rulers'}
+                {showRulers ? t('sketch.hidePixelRulers') : t('sketch.showPixelRulers')}
               </Button>
               <Button
                 variant={showPhysicalRuler ? 'secondary' : 'ghost'}
@@ -9001,7 +9001,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 onClick={() => { setShowPhysicalRuler(!showPhysicalRuler); setOpenToolbarPopover(null); }}
               >
                 <Ruler className="h-3.5 w-3.5" />
-                {showPhysicalRuler ? 'Hide Straight Edge' : '📏 Straight Edge'}
+                {showPhysicalRuler ? t('sketch.hideStraightEdge') : `📏 ${t('sketch.straightEdge')}`}
               </Button>
               <Button
                 variant={showProtractor ? 'secondary' : 'ghost'}
@@ -9010,7 +9010,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 onClick={() => { setShowProtractor(!showProtractor); setOpenToolbarPopover(null); }}
               >
                 <span className="text-sm">📐</span>
-                {showProtractor ? 'Hide Protractor' : 'Protractor'}
+                {showProtractor ? t('sketch.hideProtractor') : t('sketch.protractor')}
               </Button>
               <Button
                 variant={showTriangle ? 'secondary' : 'ghost'}
@@ -9019,7 +9019,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 onClick={() => { setShowTriangle(!showTriangle); setOpenToolbarPopover(null); }}
               >
                 <span className="text-sm">📐</span>
-                {showTriangle ? 'Hide Set Square' : 'Set Square (45°)'}
+                {showTriangle ? t('sketch.hideSetSquare') : t('sketch.setSquare')}
               </Button>
             </div>
           </PopoverContent>
@@ -9035,7 +9035,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 : 'text-foreground/70 hover:bg-muted/80 hover:text-foreground active:scale-95'
           )}
           onClick={() => setShowVideoPanel(!showVideoPanel)}
-          title="Video"
+          title={t('sketch.video')}
         >
           <Video className="h-5 w-5" strokeWidth={showVideoPanel || videoUrl ? 2.5 : 1.8} />
         </button>
@@ -9052,13 +9052,13 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     ? 'bg-primary/15 text-primary scale-105'
                     : 'text-foreground/70 hover:bg-muted/80 hover:text-foreground active:scale-95'
               )}
-              title="Audio-Sync Recording"
+              title={t('sketch.audioSyncRecording')}
             >
               <Mic className="h-5 w-5" strokeWidth={isAudioRecording || hasAudioRecording ? 2.5 : 1.8} />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-3 bg-card" align="center" side="top">
-            <p className="text-[10px] font-medium text-foreground mb-2">🎙️ Audio-Sync</p>
+            <p className="text-[10px] font-medium text-foreground mb-2">🎙️ {t('sketch.audioSync')}</p>
             {isAudioRecording ? (
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
@@ -9067,27 +9067,27 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     {Math.floor(audioRecordingTime / 60)}:{(audioRecordingTime % 60).toString().padStart(2, '0')}
                   </span>
                 </div>
-                <p className="text-[10px] text-muted-foreground">Drawing while recording... strokes will sync with audio</p>
-                <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={stopAudioRecording}>
-                  <StopSquare className="h-3.5 w-3.5 mr-1 fill-current" />Stop Recording
-                </Button>
+                 <p className="text-[10px] text-muted-foreground">{t('sketch.drawingWhileRecording')}</p>
+                 <Button variant="destructive" size="sm" className="h-7 text-xs" onClick={stopAudioRecording}>
+                   <StopSquare className="h-3.5 w-3.5 mr-1 fill-current" />{t('sketch.stopRecording')}
+                 </Button>
               </div>
             ) : hasAudioRecording ? (
               <div className="flex flex-col gap-2">
-                <p className="text-[10px] text-muted-foreground">Audio recording saved ✓</p>
-                <Button variant="default" size="sm" className="h-7 text-xs" onClick={handleAudioSyncPlayback}>
-                  {isAudioSyncPlaying ? <><Pause className="h-3.5 w-3.5 mr-1" />Stop Playback</> : <><Play className="h-3.5 w-3.5 mr-1" />Play Synced</>}
-                </Button>
-                <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive" onClick={discardAudioRecording}>
-                  <Trash2 className="h-3.5 w-3.5 mr-1" />Discard
-                </Button>
+                 <p className="text-[10px] text-muted-foreground">{t('sketch.audioRecordingSaved')}</p>
+                 <Button variant="default" size="sm" className="h-7 text-xs" onClick={handleAudioSyncPlayback}>
+                   {isAudioSyncPlaying ? <><Pause className="h-3.5 w-3.5 mr-1" />{t('sketch.stopPlayback')}</> : <><Play className="h-3.5 w-3.5 mr-1" />{t('sketch.playSynced')}</>}
+                 </Button>
+                 <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive" onClick={discardAudioRecording}>
+                   <Trash2 className="h-3.5 w-3.5 mr-1" />{t('sketch.discard')}
+                 </Button>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <p className="text-[10px] text-muted-foreground">Record audio while drawing.<br/>Strokes sync with playback.</p>
-                <Button variant="default" size="sm" className="h-7 text-xs" onClick={startAudioRecording}>
-                  <Mic className="h-3.5 w-3.5 mr-1" />Start Recording
-                </Button>
+                 <p className="text-[10px] text-muted-foreground">{t('sketch.recordAudioHint')}</p>
+                 <Button variant="default" size="sm" className="h-7 text-xs" onClick={startAudioRecording}>
+                   <Mic className="h-3.5 w-3.5 mr-1" />{t('sketch.startRecording')}
+                 </Button>
               </div>
             )}
           </PopoverContent>
@@ -9119,45 +9119,45 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <div className="flex flex-col gap-1">
               {onImageExport && (
                 <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={handleExportPng}>
-                  <FileImage className="h-3.5 w-3.5" />Insert PNG
+                  <FileImage className="h-3.5 w-3.5" />{t('sketch.insertPng')}
                 </Button>
               )}
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={handleDownloadPng}>
-                <FileImage className="h-3.5 w-3.5" />Download PNG
+                <FileImage className="h-3.5 w-3.5" />{t('sketch.downloadPng')}
               </Button>
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={handleExportSvg}>
-                <FileCode className="h-3.5 w-3.5" />Export SVG
+                <FileCode className="h-3.5 w-3.5" />{t('sketch.exportSvg')}
               </Button>
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={handleExportPdf}>
-                <FileText className="h-3.5 w-3.5" />{pdfPages.length > 0 ? 'Export Annotated PDF' : 'Export PDF'}
+                <FileText className="h-3.5 w-3.5" />{pdfPages.length > 0 ? t('sketch.exportAnnotatedPdf') : t('sketch.exportPdf')}
               </Button>
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={handleNativeShare}>
-                <Share2 className="h-3.5 w-3.5" />Share
+                <Share2 className="h-3.5 w-3.5" />{t('sketch.share')}
               </Button>
               <div className="border-t border-border my-1" />
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={() => svgInputRef.current?.click()}>
-                <FileCode className="h-3.5 w-3.5" />Import SVG
+                <FileCode className="h-3.5 w-3.5" />{t('sketch.importSvg')}
               </Button>
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={() => pdfInputRef.current?.click()}>
-                <FileUp className="h-3.5 w-3.5" />Import PDF
+                <FileUp className="h-3.5 w-3.5" />{t('sketch.importPdf')}
               </Button>
               {pdfPages.length > 0 && (
                 <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2 text-destructive" onClick={closePdf}>
-                  <Trash2 className="h-3.5 w-3.5" />Close PDF
+                  <Trash2 className="h-3.5 w-3.5" />{t('sketch.closePdf')}
                 </Button>
               )}
               <div className="border-t border-border my-1" />
-              <p className="text-[10px] font-medium text-foreground px-2 py-1">🎬 Timelapse</p>
+              <p className="text-[10px] font-medium text-foreground px-2 py-1">🎬 {t('sketch.timelapse')}</p>
               <Button
                 variant={isTimelapseRecording ? 'destructive' : 'ghost'}
                 size="sm"
                 className="h-8 text-xs justify-start gap-2 px-2"
                 onClick={toggleTimelapseRecording}
               >
-                {isTimelapseRecording ? <><StopSquare className="h-3.5 w-3.5 fill-current" />Stop Recording</> : <><Video className="h-3.5 w-3.5" />Record Timelapse</>}
+                {isTimelapseRecording ? <><StopSquare className="h-3.5 w-3.5 fill-current" />{t('sketch.stopRecording')}</> : <><Video className="h-3.5 w-3.5" />{t('sketch.recordTimelapse')}</>}
               </Button>
               <div className="flex items-center gap-1 px-2 py-1">
-                <span className="text-[10px] text-muted-foreground mr-1">Speed:</span>
+                <span className="text-[10px] text-muted-foreground mr-1">{t('sketch.speed')}:</span>
                 {[2, 4, 8].map((s) => (
                   <Button
                     key={s}
@@ -9171,7 +9171,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 ))}
               </div>
               <Button variant="ghost" size="sm" className="h-8 text-xs justify-start gap-2 px-2" onClick={handleTimelapseReplay}>
-                {isPlayingTimelapse ? <><Pause className="h-3.5 w-3.5" />Stop Replay</> : <><Play className="h-3.5 w-3.5" />Preview Timelapse</>}
+                {isPlayingTimelapse ? <><Pause className="h-3.5 w-3.5" />{t('sketch.stopReplay')}</> : <><Play className="h-3.5 w-3.5" />{t('sketch.previewTimelapse')}</>}
               </Button>
               <Button
                 variant="ghost"
@@ -9180,7 +9180,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 onClick={handleExportTimelapseMP4}
                 disabled={isExportingTimelapse}
               >
-                <Film className="h-3.5 w-3.5" />{isExportingTimelapse ? 'Exporting...' : 'Export MP4 Video'}
+                <Film className="h-3.5 w-3.5" />{isExportingTimelapse ? t('sketch.exporting') : t('sketch.exportMp4')}
               </Button>
             </div>
           </PopoverContent>
