@@ -9,12 +9,9 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchAutoHide: true,
-      launchShowDuration: 500,
-      androidScaleType: 'CENTER_CROP',
+      launchAutoHide: false,
+      launchShowDuration: 0,
       showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true,
     },
     SocialLogin: {
       google: {
