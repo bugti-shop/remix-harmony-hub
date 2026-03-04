@@ -216,8 +216,8 @@ Add the splash screen theme to your launch theme:
     <!-- Optional: App icon shown during splash -->
     <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
     
-    <!-- Minimum splash duration (keep low for fast startup) -->
-    <item name="windowSplashScreenAnimationDuration">200</item>
+    <!-- Minimum splash duration (ultra-fast startup) -->
+    <item name="windowSplashScreenAnimationDuration">50</item>
     
     <!-- Post-splash theme (your actual app theme) -->
     <item name="postSplashScreenTheme">@style/AppTheme</item>
