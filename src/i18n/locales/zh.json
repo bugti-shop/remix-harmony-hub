@@ -2521,5 +2521,18 @@
   },
   "sketch": {
     "tapToPickColor": "点击选择颜色", "copy": "复制", "paste": "粘贴", "delete": "删除", "saveAsSticker": "保存为贴纸", "removeClipMask": "移除剪切蒙版", "setAsClipMask": "设为剪切蒙版", "editStickyNote": "编辑便签", "deleteStickyNote": "删除便签", "deleteTape": "删除胶带", "copyToClipboard": "复制到剪贴板", "highlightSelectedText": "高亮选中文本", "createTextAnnotation": "创建文本注释", "clearSelection": "清除选择", "searchPdfText": "搜索PDF文本...", "found": "找到", "highlightAllMatches": "高亮所有匹配", "searchPdf": "搜索PDF文本", "typeOnSticky": "在便签上输入...", "stickerLibrary": "贴纸库", "decorative": "装饰", "yourStickers": "你的贴纸", "stickerHint": "选择笔画并点击保存为可重用贴纸。", "deleteSticker": "删除贴纸", "zoomToWrite": "缩放书写", "magnified": "放大", "newLine": "换行", "close": "关闭", "pdfOnePage": "PDF — 1页", "highlight": "高亮", "highlightColor": "高亮颜色", "opacity": "不透明度", "selectPdfText": "选择PDF文本", "stickyNoteColor": "便签颜色", "washiTapePattern": "和纸胶带图案", "washiHint": "像笔一样自由绘制", "brushSettings": "画笔设置", "texture": "纹理", "grainSize": "颗粒大小", "wetness": "湿度", "resetToDefaults": "恢复默认", "fillColor": "填充颜色", "disableFill": "禁用填充", "enableFill": "启用填充", "fillOpacity": "填充不透明度", "eyedropper": "吸管", "recent": "最近", "palettes": "调色板", "addCurrentColor": "将当前颜色添加到调色板", "newPalette": "新调色板...", "background": "背景", "gridColor": "网格颜色", "snapToGrid": "对齐网格", "layers": "图层", "blendMode": "混合模式", "symmetryMode": "对称模式", "off": "关闭", "axes2": "2轴", "axes4": "4轴", "axes8": "8轴（曼陀罗）", "hidePixelRulers": "隐藏像素标尺", "showPixelRulers": "显示像素标尺", "hideStraightEdge": "隐藏直尺", "straightEdge": "直尺", "hideProtractor": "隐藏量角器", "protractor": "量角器", "hideSetSquare": "隐藏三角板", "setSquare": "三角板（45°）", "video": "视频", "audioSync": "音频同步", "audioSyncRecording": "音频同步录制", "drawingWhileRecording": "录制时绘制...笔画将与音频同步", "stopRecording": "停止录制", "audioRecordingSaved": "录音已保存 ✓", "stopPlayback": "停止播放", "playSynced": "同步播放", "discard": "丢弃", "recordAudioHint": "绘制时录制音频。\n笔画与播放同步。", "startRecording": "开始录制", "insertPng": "插入PNG", "downloadPng": "下载PNG", "exportSvg": "导出SVG", "exportAnnotatedPdf": "导出注释PDF", "exportPdf": "导出PDF", "share": "分享", "importSvg": "导入SVG", "importPdf": "导入PDF", "closePdf": "关闭PDF", "timelapse": "延时摄影", "recordTimelapse": "录制延时", "speed": "速度", "stopReplay": "停止回放", "previewTimelapse": "预览延时", "exporting": "导出中...", "exportMp4": "导出MP4视频", "laserPointerActive": "激光笔活跃", "exitPresentationMode": "退出演示模式（Esc）", "exitFocusMode": "退出专注模式", "swipeOrArrowKeys": "滑动或使用方向键导航", "dragToScrub": "拖动以定位 • 点击笔画跳转", "loopOn": "循环开启", "loopOff": "循环关闭", "disableLoop": "禁用循环", "enableLoop": "启用循环", "stop": "停止", "pdfLoaded": "PDF已加载 — {{pages}}页", "pdfLoadFailed": "PDF加载失败", "shapeDetected": "检测到{{shape}}！", "exportFailed": "导出失败", "annotatedPdfExported": "注释PDF已导出！", "timelapseRecordingStopped": "延时录制已停止！", "timelapseRecordingStarted": "延时录制已开始——开始画吧！", "noStrokesToExport": "没有可导出的笔画", "timelapseExported": "延时视频已导出！", "timelapseExportFailed": "延时导出失败", "audioRecordingStarted": "录音已开始——画画以同步！", "microphoneAccessDenied": "麦克风访问被拒绝", "audioRecordingSavedToast": "录音已保存！", "noAudioRecording": "没有录音可播放", "noSyncedStrokes": "未找到同步笔画", "savedAsSticker": "已保存为贴纸！", "textCopied": "文本已复制", "textHighlighted": "文本已高亮", "textAnnotationCreated": "文本注释已创建", "highlightedMatches": "已高亮{{count}}个匹配", "symmetryEnabled": "{{mode}}对称已启用"
+  },
+  "sketchVideo": {
+    "invalidYoutubeUrl": "无效的YouTube链接",
+    "showVideo": "显示视频",
+    "addVideo": "添加视频",
+    "video": "视频",
+    "pasteYoutubeUrl": "粘贴YouTube链接...",
+    "add": "添加",
+    "pasteDescription": "粘贴YouTube链接以嵌入并在观看时做笔记",
+    "bookmarkLabel": "书签标签...",
+    "bookmarkAtTime": "{{time}}处的书签",
+    "bookmarkAdded": "📌 已在{{time}}添加书签",
+    "removeVideo": "移除视频"
   }
 }
