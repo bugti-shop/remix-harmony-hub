@@ -112,7 +112,7 @@ This guide provides complete Android native code including:
 
 ---
 
-## Complete MainActivity.java (Google Sign-In ONLY)
+## Complete MainActivity.java (Google Sign-In + Optimized Splash Screen)
 
 **File:** `android/app/src/main/java/nota/npd/com/MainActivity.java`
 
@@ -124,8 +124,9 @@ This guide provides complete Android native code including:
 > - Boot receiver (auto-registered by the plugin)
 > - Scheduling, sounds, vibration — all handled by the plugin
 >
-> The ONLY reason we customize MainActivity is for **Google Sign-In** (Capgo Social Login plugin).
-> If you don't use Google Sign-In, you can use the default `BridgeActivity` with zero modifications.
+> This MainActivity handles:
+> 1. **Google Sign-In** (Capgo Social Login plugin)
+> 2. **Optimized Splash Screen** (Android 12+ API — WhatsApp-style instant startup)
 
 ```java
 package nota.npd.com;
@@ -133,6 +134,8 @@ package nota.npd.com;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.core.splashscreen.SplashScreen;
 
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.PluginHandle;
@@ -144,15 +147,13 @@ import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
 /**
  * Main Activity for Npd App
  * 
- * ONLY handles Google Sign-In via Capgo Social Login plugin.
+ * Handles:
+ * 1. Google Sign-In via Capgo Social Login plugin
+ * 2. Android 12+ SplashScreen API for instant startup (WhatsApp-style)
+ *    - Splash shows only during cold start, not on every resume
+ *    - Dismisses as fast as possible (~200ms)
  * 
- * Notifications are handled ENTIRELY by @capacitor/local-notifications plugin:
- * - Permission dialog: triggered from JS via LocalNotifications.requestPermissions()
- * - Channels: created from JS via ensureChannel() in notifications.ts
- * - Boot receiver: auto-registered by the plugin
- * 
- * If you don't use Google Sign-In, you can delete this file entirely
- * and use the default BridgeActivity.
+ * Notifications are handled ENTIRELY by @capacitor/local-notifications plugin.
  */
 public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
     
@@ -160,9 +161,15 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Install splash screen BEFORE super.onCreate() — required by Android 12+ API
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        
+        // Dismiss splash immediately — no extra delay, WhatsApp-style
+        splashScreen.setKeepOnScreenCondition(() -> false);
+        
         registerPlugin(SocialLoginPlugin.class);
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: App started with Social Login");
+        Log.d(TAG, "onCreate: App started with Social Login + Optimized Splash");
     }
     
     @Override
@@ -193,23 +200,43 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
 
 ---
 
-## Splash Screen Background Color
+## Splash Screen Setup (Android 12+ API)
 
-In your `android/app/src/main/res/values/styles.xml`, add the window background color to your launch theme:
+### styles.xml
+
+**File:** `android/app/src/main/res/values/styles.xml`
+
+Add the splash screen theme to your launch theme:
 
 ```xml
-<item name="android:windowBackground">#3a6cc9</item>
+<style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+    <!-- Splash background color -->
+    <item name="windowSplashScreenBackground">#3a6cc9</item>
+    
+    <!-- Optional: App icon shown during splash -->
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    
+    <!-- Minimum splash duration (keep low for fast startup) -->
+    <item name="windowSplashScreenAnimationDuration">200</item>
+    
+    <!-- Post-splash theme (your actual app theme) -->
+    <item name="postSplashScreenTheme">@style/AppTheme</item>
+</style>
 ```
 
 ---
 
-## Billing Dependency
+## Billing & Splash Screen Dependencies
 
-Add the Google Play Billing library to your `android/app/build.gradle`:
+Add these to your `android/app/build.gradle`:
 
 ```gradle
 dependencies {
+    // Google Play Billing
     implementation "com.android.billingclient:billing:7.1.1"
+    
+    // Android 12+ SplashScreen API (backward compatible to API 21)
+    implementation "androidx.core:core-splashscreen:1.0.1"
 }
 ```
 
