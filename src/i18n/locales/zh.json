@@ -2498,5 +2498,25 @@
   },
   "findReplace": {
     "back": "返回", "title": "查找与替换", "find": "查找", "findPlaceholder": "输入要查找的文本...", "matchOf": "第{{current}}个，共{{total}}个", "replaceWith": "替换为", "replacePlaceholder": "输入替换文本...", "replaceNext": "替换下一个", "replaceAll": "全部替换", "removeAllMatches": "移除所有匹配", "clear": "清除", "cleared": "已清除", "enterSearchTerm": "请输入搜索词", "foundMatches": "找到{{count}}个匹配", "noMatchesFound": "未找到匹配", "enterSearchFirst": "请先输入搜索词", "noMatchesToReplace": "没有可替换的匹配。请先点击查找。", "replacedOccurrences": "已替换{{count}}处", "noMatchesToRemove": "没有可移除的匹配。请先点击查找。", "removedOccurrences": "已移除{{count}}处", "replacedOneRemaining": "已替换1处（剩余{{count}}处）", "replacedLastMatch": "已替换最后一个匹配"
+  },
+  "journey": {
+    "title": "虚拟旅程", "chooseAdventure": "选择你的冒险", "startDescription": "完成任务环游世界！选择一个冒险。", "newJourney": "新旅程", "change": "更改", "journeyComplete": "旅程完成！🎉", "milestoneReached": "里程碑达成！", "completedEntireJourney": "你完成了整个{{name}}旅程！", "nextMilestone": "下一个：{{name}}（还差{{count}}个任务）", "startingPoint": "起点", "milestonesCount": "里程碑", "completedCheck": "已完成 ✓", "journeyBadges": "旅程徽章", "viewAll": "查看全部", "certificate": "证书", "history": "历史", "journeysCompleted": "{{count}}个旅程已完成", "badgesCount": "{{count}}个徽章",
+    "nile": { "name": "尼罗河航行", "description": "沿世界最长河流行驶6,650公里" },
+    "silk_road": { "name": "丝绸之路", "description": "从中国到地中海的古老贸易路线" },
+    "everest": { "name": "攀登珠峰", "description": "从大本营到世界最高峰的顶峰" },
+    "pacific": { "name": "横渡太平洋", "description": "从东京航行到旧金山" },
+    "amazon": { "name": "亚马逊探险", "description": "穿越世界最大的热带雨林" },
+    "space": { "name": "火星之旅", "description": "从地球起飞，登陆红色星球" }
+  },
+  "certificates": {
+    "title": "证书", "loading": "加载证书中...", "description": "通过完成任务、保持连续记录、创建笔记和使用文件夹来获得证书。在LinkedIn上分享你的成就！", "unlocked": "已解锁", "certificateUnlocked": "🎉 证书已解锁！", "certificateOfAchievement": "成就证书", "awardedTo": "授予", "yourName": "你的名字", "scanToDownload": "扫描下载应用", "notYetAchieved": "尚未达成", "yourNameOnCertificate": "证书上的名字", "enterYourName": "输入你的名字", "nameOnSharedImage": "此名字将显示在分享的证书图片上", "requirements": "要求", "tasksCompleted": "已完成任务", "streakDays": "连续天数", "notesCreated": "已创建笔记", "foldersUsed": "已使用文件夹", "certificateStatement": "证书声明", "shareOnSocialMedia": "分享到社交媒体", "shareDescription": "下载你的证书图片，分享到LinkedIn、Instagram、Twitter！", "shareCertificate": "分享证书", "generatingImage": "生成图片中...", "linkedInPost": "LinkedIn帖子", "readyToPaste": "可以粘贴", "copied": "已复制！", "copyForLinkedIn": "复制到LinkedIn", "completeRequirements": "完成所有要求以解锁分享", "allCertificates": "← 所有证书", "viewCertificate": "查看证书", "dedicationPaidOff": "你的努力得到了回报。你获得了{{title}}证书！", "tasks": "任务", "streak": "连续", "notes": "笔记", "tasksCompletedInDays": "{{tasks}}+个任务在{{days}}+天内完成",
+    "beginner": { "title": "初学者", "subtitle": "第一步" }, "achiever": { "title": "成就者", "subtitle": "积蓄动力" }, "expert": { "title": "专家", "subtitle": "验证的纪律" }, "champion": { "title": "冠军", "subtitle": "精英表现" }, "master": { "title": "大师", "subtitle": "传奇地位" }, "legend": { "title": "365天", "subtitle": "一年的纪律" }, "immortal": { "title": "1000天", "subtitle": "不朽的生产力" }
+  },
+  "achievementItems": {
+    "streak_3": { "name": "开始", "description": "保持3天连续记录" }, "streak_7": { "name": "周战士", "description": "保持7天连续记录" }, "streak_14": { "name": "两周冠军", "description": "保持14天连续记录" }, "streak_30": { "name": "月度大师", "description": "保持30天连续记录" }, "streak_60": { "name": "势不可挡", "description": "保持60天连续记录" }, "streak_100": { "name": "百日俱乐部", "description": "保持100天连续记录" }, "streak_365": { "name": "奉献之年", "description": "保持365天连续记录" },
+    "tasks_10": { "name": "第一步", "description": "完成10个任务" }, "tasks_50": { "name": "任务征服者", "description": "完成50个任务" }, "tasks_100": { "name": "百日达人", "description": "完成100个任务" }, "tasks_500": { "name": "任务机器", "description": "完成500个任务" }, "tasks_1000": { "name": "任务传奇", "description": "完成1000个任务" },
+    "daily_5": { "name": "高效的一天", "description": "一天完成5个任务" }, "daily_10": { "name": "超级高效", "description": "一天完成10个任务" }, "daily_20": { "name": "生产力怪兽", "description": "一天完成20个任务" },
+    "early_bird": { "name": "早起鸟", "description": "在早上6点前完成任务" }, "night_owl": { "name": "夜猫子", "description": "在午夜后完成任务" }, "weekend_warrior": { "name": "周末战士", "description": "在周六和周日都完成任务" }, "freeze_collector": { "name": "冻结收集者", "description": "获得5次连续冻结" },
+    "unlocked": "已解锁！🎉"
   }
 }
