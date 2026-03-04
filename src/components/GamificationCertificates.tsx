@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
   X, Copy, Check, Share2, Award, Shield, Star, Crown, Gem,
   Flame, FileText, FolderOpen, Lock, ChevronRight,
@@ -212,10 +213,6 @@ const isUnlocked = (progress: UserProgress, cert: CertificateLevel): boolean => 
   );
 };
 
-/**
- * Check if there are unseen unlocked certificates (for badge indicators).
- * Returns true if user has unlocked certs they haven't viewed yet.
- */
 export const hasNewCertificates = async (longestStreak: number): Promise<boolean> => {
   try {
     const [tasks, notes, folders, adminBypass, seenCerts] = await Promise.all([
@@ -256,6 +253,7 @@ interface CertificatesProps {
 }
 
 export const GamificationCertificates = ({ isOpen, onClose, streakData }: CertificatesProps) => {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [selectedCert, setSelectedCert] = useState<CertificateLevel | null>(null);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
@@ -266,6 +264,9 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   const cardRef = useRef<HTMLDivElement>(null);
   const { profile } = useUserProfile();
+
+  const getCertTitle = (cert: CertificateLevel) => t(`certificates.${cert.id}.title`, cert.title);
+  const getCertSubtitle = (cert: CertificateLevel) => t(`certificates.${cert.id}.subtitle`, cert.subtitle);
 
   useEffect(() => {
     const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -301,18 +302,15 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
         };
         setProgress(userProgress);
 
-        // Check for newly unlocked certificates
         const newlyUnlocked = CERTIFICATE_LEVELS.filter(
           cert => isUnlocked(userProgress, cert) && !seenCerts.includes(cert.id)
         );
 
         if (newlyUnlocked.length > 0) {
-          // Celebrate the highest new unlock
           const highest = newlyUnlocked.reduce((a, b) => a.level > b.level ? a : b);
           setCelebratingCert(highest);
           triggerNotificationHaptic('success').catch(() => {});
 
-          // Mark all newly unlocked as seen
           const updatedSeen = [...seenCerts, ...newlyUnlocked.map(c => c.id)];
           await setSetting('npd_seen_certificates', updatedSeen);
         }
@@ -411,9 +409,9 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
       await shareImageBlob({
         blob,
         fileName: `npd-certificate-${selectedCert.id}.png`,
-        title: `Npd ${selectedCert.title} Certificate`,
+        title: `Npd ${getCertTitle(selectedCert)} Certificate`,
         text: selectedCert.linkedInDescription,
-        dialogTitle: 'Share Certificate',
+        dialogTitle: t('certificates.shareCertificate', 'Share Certificate'),
       });
       setShareConfetti(true);
       setTimeout(() => setShareConfetti(false), 3500);
@@ -422,7 +420,7 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
     } finally {
       setIsSharing(false);
     }
-  }, [selectedCert]);
+  }, [selectedCert, t]);
 
   if (!isOpen) return null;
 
@@ -434,7 +432,6 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md overflow-y-auto"
       >
-        {/* Share confetti */}
         {shareConfetti && (
           <Confetti
             width={window.innerWidth}
@@ -449,7 +446,7 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
          <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] flex items-center justify-between">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <Award className="h-5 w-5 text-warning" />
-            Certificates
+            {t('certificates.title', 'Certificates')}
           </h2>
           <button onClick={() => { setSelectedCert(null); setCelebratingCert(null); onClose(); }} className="p-2 rounded-full hover:bg-muted">
             <X className="h-5 w-5" />
@@ -472,10 +469,9 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
 
         {isLoading || !progress ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-pulse text-muted-foreground text-sm">Loading certificates...</div>
+            <div className="animate-pulse text-muted-foreground text-sm">{t('certificates.loading', 'Loading certificates...')}</div>
           </div>
         ) : selectedCert ? (
-          /* Certificate Detail View */
           <CertificateDetail
             cert={selectedCert}
             progress={progress}
@@ -490,10 +486,9 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
             userAvatar={profile.avatarUrl}
           />
         ) : (
-          /* Certificate List */
           <div className="px-4 py-6 space-y-3 pb-32">
             <p className="text-xs text-muted-foreground mb-4">
-              Earn certificates by completing tasks, maintaining streaks, creating notes, and using folders. Share your achievements on LinkedIn!
+              {t('certificates.description', 'Earn certificates by completing tasks, maintaining streaks, creating notes, and using folders. Share your achievements on LinkedIn!')}
             </p>
             {CERTIFICATE_LEVELS.map((cert, i) => {
               const unlocked = isUnlocked(progress, cert);
@@ -529,15 +524,14 @@ export const GamificationCertificates = ({ isOpen, onClose, streakData }: Certif
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-sm font-bold">{cert.title}</span>
+                      <span className="text-sm font-bold">{getCertTitle(cert)}</span>
                       {unlocked && (
                         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: `${cert.colors.accent}20`, color: cert.colors.accent }}>
-                          UNLOCKED
+                          {t('certificates.unlocked', 'UNLOCKED')}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{cert.subtitle}</p>
-                    {/* Progress bar */}
+                    <p className="text-xs text-muted-foreground">{getCertSubtitle(cert)}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
                         <motion.div
@@ -585,51 +579,51 @@ const CertificateDetail = ({
   cert, progress, unlocked, cardRef, copiedLinkedIn, isSharing,
   onBack, onCopyLinkedIn, onShare, userName, userAvatar,
 }: CertificateDetailProps) => {
+  const { t } = useTranslation();
   const Icon = cert.icon;
   const r = cert.requirements;
   const [editingName, setEditingName] = useState(false);
   const [cardName, setCardName] = useState(userName || '');
 
+  const getCertTitle = (c: CertificateLevel) => t(`certificates.${c.id}.title`, c.title);
+  const getCertSubtitle = (c: CertificateLevel) => t(`certificates.${c.id}.subtitle`, c.subtitle);
+
   const reqRows = [
-    { label: 'Tasks completed', current: progress.tasksCompleted, required: r.tasksCompleted, icon: <Check className="h-3 w-3" /> },
-    { label: 'Streak days', current: progress.longestStreak, required: r.streakDays, icon: <Flame className="h-3 w-3" /> },
-    { label: 'Notes created', current: progress.notesCreated, required: r.notesCreated, icon: <FileText className="h-3 w-3" /> },
-    { label: 'Folders used', current: progress.foldersUsed, required: r.foldersUsed, icon: <FolderOpen className="h-3 w-3" /> },
+    { label: t('certificates.tasksCompleted', 'Tasks completed'), current: progress.tasksCompleted, required: r.tasksCompleted, icon: <Check className="h-3 w-3" /> },
+    { label: t('certificates.streakDays', 'Streak days'), current: progress.longestStreak, required: r.streakDays, icon: <Flame className="h-3 w-3" /> },
+    { label: t('certificates.notesCreated', 'Notes created'), current: progress.notesCreated, required: r.notesCreated, icon: <FileText className="h-3 w-3" /> },
+    { label: t('certificates.foldersUsed', 'Folders used'), current: progress.foldersUsed, required: r.foldersUsed, icon: <FolderOpen className="h-3 w-3" /> },
   ];
 
   return (
     <div className="px-4 py-6 space-y-6 pb-32">
-      {/* Back button */}
       <button onClick={onBack} className="text-xs text-primary font-medium flex items-center gap-1">
-        ← All Certificates
+        {t('certificates.allCertificates', '← All Certificates')}
       </button>
 
-      {/* Certificate Card */}
       <div className="flex justify-center">
         <div ref={cardRef}>
           <CertificateCard cert={cert} unlocked={unlocked} userName={cardName} userAvatar={userAvatar} />
         </div>
       </div>
 
-      {/* Editable name for card */}
       <div className="bg-card border rounded-xl p-4">
-        <h3 className="text-sm font-bold mb-2">Your Name on Certificate</h3>
+        <h3 className="text-sm font-bold mb-2">{t('certificates.yourNameOnCertificate', 'Your Name on Certificate')}</h3>
         <div className="flex items-center gap-2">
           <input
             type="text"
             value={cardName}
             onChange={(e) => setCardName(e.target.value)}
-            placeholder="Enter your name"
+            placeholder={t('certificates.enterYourName', 'Enter your name')}
             className="flex-1 text-sm bg-muted rounded-lg px-3 py-2 border border-border focus:outline-none focus:ring-2 focus:ring-primary/40"
             maxLength={40}
           />
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1.5">This name will appear on the shared certificate image</p>
+        <p className="text-[10px] text-muted-foreground mt-1.5">{t('certificates.nameOnSharedImage', 'This name will appear on the shared certificate image')}</p>
       </div>
 
-      {/* Requirements */}
       <div className="bg-card border rounded-xl p-4">
-        <h3 className="text-sm font-bold mb-3">Requirements</h3>
+        <h3 className="text-sm font-bold mb-3">{t('certificates.requirements', 'Requirements')}</h3>
         <div className="space-y-2.5">
           {reqRows.map((row) => {
             const met = row.current >= row.required;
@@ -661,39 +655,37 @@ const CertificateDetail = ({
         </div>
       </div>
 
-      {/* Certificate text */}
       <div className="bg-card border rounded-xl p-4">
-        <h3 className="text-sm font-bold mb-2">Certificate Statement</h3>
+        <h3 className="text-sm font-bold mb-2">{t('certificates.certificateStatement', 'Certificate Statement')}</h3>
         <p className="text-xs text-muted-foreground leading-relaxed italic">"{cert.certificateText}"</p>
       </div>
 
-      {/* Share actions */}
       {unlocked && (
         <>
           <div className="bg-card border-2 rounded-xl p-5 space-y-3" style={{ borderColor: cert.colors.accent + '60' }}>
             <h3 className="text-sm font-bold flex items-center gap-2">
               <Share2 className="h-4 w-4" style={{ color: cert.colors.accent }} />
-              Share on Social Media
+              {t('certificates.shareOnSocialMedia', 'Share on Social Media')}
             </h3>
-            <p className="text-xs text-muted-foreground">Download your certificate image and share it on LinkedIn, Instagram, Twitter, or any platform!</p>
+            <p className="text-xs text-muted-foreground">{t('certificates.shareDescription', 'Download your certificate image and share it on LinkedIn, Instagram, Twitter, or any platform!')}</p>
             <Button onClick={onShare} disabled={isSharing} className="w-full font-bold" size="lg"
               style={{ background: cert.colors.accent, color: 'hsl(0,0%,5%)' }}>
               <Share2 className="h-4 w-4 mr-2" />
-              {isSharing ? 'Generating Image...' : 'Share Certificate'}
+              {isSharing ? t('certificates.generatingImage', 'Generating Image...') : t('certificates.shareCertificate', 'Share Certificate')}
             </Button>
           </div>
 
           <div className="bg-card border rounded-xl p-4">
             <h3 className="text-sm font-bold mb-2 flex items-center gap-2">
-              LinkedIn Post
-              <span className="text-[9px] font-normal text-muted-foreground">Ready to paste</span>
+              {t('certificates.linkedInPost', 'LinkedIn Post')}
+              <span className="text-[9px] font-normal text-muted-foreground">{t('certificates.readyToPaste', 'Ready to paste')}</span>
             </h3>
             <p className="text-xs text-foreground whitespace-pre-line leading-relaxed mb-3">
               {cert.linkedInDescription}
             </p>
             <button onClick={() => onCopyLinkedIn(cert.linkedInDescription)}
               className="flex items-center gap-1.5 text-xs text-primary font-medium">
-              {copiedLinkedIn ? <><Check className="h-3.5 w-3.5" /> Copied!</> : <><Copy className="h-3.5 w-3.5" /> Copy for LinkedIn</>}
+              {copiedLinkedIn ? <><Check className="h-3.5 w-3.5" /> {t('certificates.copied', 'Copied!')}</> : <><Copy className="h-3.5 w-3.5" /> {t('certificates.copyForLinkedIn', 'Copy for LinkedIn')}</>}
             </button>
           </div>
         </>
@@ -702,7 +694,7 @@ const CertificateDetail = ({
       {!unlocked && (
         <div className="bg-muted/50 border border-dashed rounded-xl p-5 text-center">
           <Lock className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground font-medium">Complete all requirements to unlock sharing</p>
+          <p className="text-xs text-muted-foreground font-medium">{t('certificates.completeRequirements', 'Complete all requirements to unlock sharing')}</p>
         </div>
       )}
     </div>
@@ -714,15 +706,17 @@ const CertificateDetail = ({
    ============================================ */
 
 const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: CertificateLevel; unlocked: boolean; userName?: string; userAvatar?: string }) => {
+  const { t } = useTranslation();
   const Icon = cert.icon;
   const dateStr = format(new Date(), 'MMMM d, yyyy');
 
+  const getCertTitle = (c: CertificateLevel) => t(`certificates.${c.id}.title`, c.title);
+  const getCertSubtitle = (c: CertificateLevel) => t(`certificates.${c.id}.subtitle`, c.subtitle);
+
   return (
     <div style={{ width: '360px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: cert.colors.bg, aspectRatio: '4/5' }}>
-      {/* Top accent line */}
       <div style={{ height: '4px', background: cert.colors.accent }} />
 
-      {/* Corner ornaments */}
       <div style={{ position: 'absolute', top: '16px', left: '16px', width: '24px', height: '24px', borderTop: `2px solid ${cert.colors.accent}40`, borderLeft: `2px solid ${cert.colors.accent}40` }} />
       <div style={{ position: 'absolute', top: '16px', right: '16px', width: '24px', height: '24px', borderTop: `2px solid ${cert.colors.accent}40`, borderRight: `2px solid ${cert.colors.accent}40` }} />
       <div style={{ position: 'absolute', bottom: '16px', left: '16px', width: '24px', height: '24px', borderBottom: `2px solid ${cert.colors.accent}40`, borderLeft: `2px solid ${cert.colors.accent}40` }} />
@@ -732,31 +726,28 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
         position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '32px 24px', textAlign: 'center',
       }}>
-        {/* Header */}
         <div>
           <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: cert.colors.text }}>
-            Certificate of Achievement
+            {t('certificates.certificateOfAchievement', 'Certificate of Achievement')}
           </p>
           <div style={{ width: '48px', height: '1px', margin: '8px auto 0', background: cert.colors.accent }} />
         </div>
 
-        {/* Icon & Title */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
             <Icon style={{ width: '64px', height: '64px', color: cert.colors.accent }} />
           </div>
           <h3 style={{ fontSize: '30px', fontWeight: 900, letterSpacing: '-0.02em', color: 'hsl(0,0%,100%)' }}>
-            {cert.title}
+            {getCertTitle(cert)}
           </h3>
           <p style={{ fontSize: '14px', fontWeight: 500, marginTop: '4px', color: cert.colors.text }}>
-            {cert.subtitle}
+            {getCertSubtitle(cert)}
           </p>
         </div>
 
-        {/* Awarded to name */}
         <div style={{ textAlign: 'center', marginTop: '4px' }}>
           <p style={{ fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: cert.colors.text, opacity: 0.7, marginBottom: '6px' }}>
-            Awarded to
+            {t('certificates.awardedTo', 'Awarded to')}
           </p>
           <div
             data-export-profile-row="true"
@@ -785,31 +776,28 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
                 whiteSpace: 'nowrap',
               }}
             >
-              {userName || 'Your Name'}
+              {userName || t('certificates.yourName', 'Your Name')}
             </span>
           </div>
         </div>
 
-        {/* Stats summary */}
         <div style={{ width: '100%' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px' }}>
-            <CertStat value={`${cert.requirements.tasksCompleted}+`} label="Tasks" accent={cert.colors.accent} />
-            <CertStat value={`${cert.requirements.streakDays}d`} label="Streak" accent={cert.colors.accent} />
-            <CertStat value={`${cert.requirements.notesCreated}+`} label="Notes" accent={cert.colors.accent} />
+            <CertStat value={`${cert.requirements.tasksCompleted}+`} label={t('certificates.tasks', 'Tasks')} accent={cert.colors.accent} />
+            <CertStat value={`${cert.requirements.streakDays}d`} label={t('certificates.streak', 'Streak')} accent={cert.colors.accent} />
+            <CertStat value={`${cert.requirements.notesCreated}+`} label={t('certificates.notes', 'Notes')} accent={cert.colors.accent} />
           </div>
 
-          {/* Tasks in Days highlight */}
           <div style={{
             textAlign: 'center', marginBottom: '16px', padding: '8px 12px',
             borderRadius: '8px', background: `${cert.colors.accent}12`,
             border: `1px solid ${cert.colors.accent}20`,
           }}>
             <p style={{ fontSize: '11px', fontWeight: 700, color: cert.colors.accent }}>
-              {cert.requirements.tasksCompleted}+ Tasks Completed in {cert.requirements.streakDays}+ Days
+              {t('certificates.tasksCompletedInDays', { tasks: cert.requirements.tasksCompleted, days: cert.requirements.streakDays })}
             </p>
           </div>
 
-          {/* QR Code + Branding */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '12px' }}>
             <div style={{
               background: '#ffffff', borderRadius: 6, padding: 4,
@@ -853,14 +841,14 @@ const CertificateCard = ({ cert, unlocked, userName, userAvatar }: { cert: Certi
                 </span>
               </div>
               <p style={{ color: cert.colors.text, fontSize: 7, opacity: 0.45, margin: 0 }}>
-                Scan to download the app
+                {t('certificates.scanToDownload', 'Scan to download the app')}
               </p>
             </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <p style={{ fontSize: '9px', color: cert.colors.text }}>
-              {unlocked ? dateStr : 'Not yet achieved'}
+              {unlocked ? dateStr : t('certificates.notYetAchieved', 'Not yet achieved')}
             </p>
           </div>
         </div>
@@ -887,26 +875,29 @@ interface CertificateCelebrationProps {
 }
 
 const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCelebrationProps) => {
+  const { t } = useTranslation();
   const Icon = cert.icon;
 
-  // Play level-specific celebration sound on mount
+  const getCertTitle = (c: CertificateLevel) => t(`certificates.${c.id}.title`, c.title);
+  const getCertSubtitle = (c: CertificateLevel) => t(`certificates.${c.id}.subtitle`, c.subtitle);
+
   useEffect(() => {
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const t = ctx.currentTime;
+      const curTime = ctx.currentTime;
 
       const playNote = (freq: number, delay: number, dur: number, type: OscillatorType, vol: number) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(freq, t + delay);
+        osc.frequency.setValueAtTime(freq, curTime + delay);
         osc.type = type;
-        gain.gain.setValueAtTime(0, t + delay);
-        gain.gain.linearRampToValueAtTime(vol, t + delay + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + delay + dur);
-        osc.start(t + delay);
-        osc.stop(t + delay + dur);
+        gain.gain.setValueAtTime(0, curTime + delay);
+        gain.gain.linearRampToValueAtTime(vol, curTime + delay + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, curTime + delay + dur);
+        osc.start(curTime + delay);
+        osc.stop(curTime + delay + dur);
       };
 
       const playChord = (freqs: number[], delay: number, dur: number, type: OscillatorType, vol: number) => {
@@ -916,19 +907,16 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
       const level = cert.level;
 
       if (level === 1) {
-        // Beginner: Simple bright chime - two ascending notes
         playNote(659.25, 0, 0.3, 'sine', 0.2);
         playNote(880, 0.15, 0.4, 'sine', 0.25);
         setTimeout(() => ctx.close(), 1000);
       } else if (level === 2) {
-        // Achiever: Cheerful arpeggio - C E G
         playNote(523.25, 0, 0.3, 'triangle', 0.2);
         playNote(659.25, 0.12, 0.3, 'triangle', 0.22);
         playNote(783.99, 0.24, 0.4, 'triangle', 0.25);
         playChord([523.25, 783.99], 0.45, 0.6, 'sine', 0.12);
         setTimeout(() => ctx.close(), 1500);
       } else if (level === 3) {
-        // Expert: Triumphant fanfare with harmonics
         [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
           playNote(f, i * 0.1, 0.35, 'triangle', 0.22);
         });
@@ -937,40 +925,29 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
         }, 500);
         setTimeout(() => ctx.close(), 1800);
       } else if (level === 4) {
-        // Master: Grand orchestral feel - layered arpeggios + power chord
-        // Low foundation
         playNote(261.63, 0, 0.5, 'sawtooth', 0.08);
-        // Rising arpeggio
         [392, 523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
           playNote(f, i * 0.09, 0.35, 'triangle', 0.2);
         });
-        // Shimmer
         [1318.51, 1567.98, 1760].forEach((f, i) => {
           playNote(f, 0.5 + i * 0.07, 0.2, 'sine', 0.1);
         });
-        // Power chord
         setTimeout(() => {
           playChord([261.63, 523.25, 659.25, 783.99, 1046.50], 0, 1.2, 'sine', 0.1);
         }, 700);
         setTimeout(() => ctx.close(), 2500);
       } else {
-        // Legend (level 5): Epic orchestral with bass, layered harmonics, and finale
-        // Deep bass rumble
         playNote(130.81, 0, 0.8, 'sawtooth', 0.06);
         playNote(196, 0, 0.6, 'sawtooth', 0.05);
-        // Dramatic ascending scale
         [261.63, 329.63, 392, 523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
           playNote(f, 0.05 + i * 0.08, 0.3, 'triangle', 0.18 + i * 0.01);
         });
-        // Sparkle layer
         [1567.98, 1760, 2093, 2349.32, 2637.02].forEach((f, i) => {
           playNote(f, 0.7 + i * 0.06, 0.15, 'sine', 0.08);
         });
-        // First chord hit
         setTimeout(() => {
           playChord([261.63, 523.25, 659.25, 783.99, 1046.50], 0, 0.6, 'triangle', 0.12);
         }, 900);
-        // Final epic sustained chord
         setTimeout(() => {
           playChord([130.81, 261.63, 392, 523.25, 659.25, 783.99, 1046.50, 1318.51], 0, 1.5, 'sine', 0.08);
         }, 1300);
@@ -980,6 +957,7 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
       console.error('Certificate sound error:', e);
     }
   }, [cert.level]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -988,7 +966,6 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
       className="fixed inset-0 z-[100] flex items-center justify-center"
       style={{ background: cert.colors.bg }}
     >
-      {/* Confetti */}
       <Confetti
         width={windowSize.width}
         height={windowSize.height}
@@ -998,7 +975,6 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
         colors={[cert.colors.accent, '#FFD700', '#FF6B35', '#44FF44', '#FFFFFF', '#FF44FF']}
       />
 
-      {/* Radial glow */}
       <motion.div
         className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
         style={{ width: 280, height: 280, background: cert.colors.accent, opacity: 0.12 }}
@@ -1007,7 +983,6 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
       />
 
       <div className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-sm">
-        {/* Congratulations text */}
         <motion.p
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1015,10 +990,9 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
           className="text-xs font-bold tracking-[0.3em] uppercase mb-6"
           style={{ color: cert.colors.text }}
         >
-          🎉 Certificate Unlocked!
+          {t('certificates.certificateUnlocked', '🎉 Certificate Unlocked!')}
         </motion.p>
 
-        {/* Animated Icon */}
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
@@ -1044,7 +1018,6 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
           </div>
         </motion.div>
 
-        {/* Certificate Title */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -1054,14 +1027,13 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
             className="text-4xl font-black"
             style={{ color: 'hsl(0,0%,100%)', textShadow: `0 0 30px ${cert.colors.accent}50` }}
           >
-            {cert.title}
+            {getCertTitle(cert)}
           </h2>
           <p className="text-sm font-medium mt-1" style={{ color: cert.colors.text }}>
-            {cert.subtitle}
+            {getCertSubtitle(cert)}
           </p>
         </motion.div>
 
-        {/* Mini Certificate Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1072,16 +1044,15 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
           <div className="p-4 text-center" style={{ background: `${cert.colors.accent}08` }}>
             <div className="h-0.5 w-12 mx-auto rounded-full mb-3" style={{ background: cert.colors.accent }} />
             <p className="text-[10px] tracking-[0.2em] uppercase font-bold" style={{ color: cert.colors.text }}>
-              Certificate of Achievement
+              {t('certificates.certificateOfAchievement', 'Certificate of Achievement')}
             </p>
             <p className="text-xs mt-2 leading-relaxed" style={{ color: 'hsl(0,0%,100%,0.6)' }}>
-              {cert.requirements.tasksCompleted}+ tasks · {cert.requirements.streakDays}d streak · {cert.requirements.notesCreated}+ notes
+              {cert.requirements.tasksCompleted}+ {t('certificates.tasks', 'tasks').toLowerCase()} · {cert.requirements.streakDays}d {t('certificates.streak', 'streak').toLowerCase()} · {cert.requirements.notesCreated}+ {t('certificates.notes', 'notes').toLowerCase()}
             </p>
             <div className="h-0.5 w-12 mx-auto rounded-full mt-3" style={{ background: cert.colors.accent }} />
           </div>
         </motion.div>
 
-        {/* Congratulations Message */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1089,10 +1060,9 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
           className="text-xs mt-5 leading-relaxed"
           style={{ color: 'hsl(0,0%,100%,0.5)' }}
         >
-          Your dedication has paid off. You've earned the <span style={{ color: cert.colors.accent }} className="font-bold">{cert.title}</span> certificate!
+          {t('certificates.dedicationPaidOff', { title: getCertTitle(cert) })}
         </motion.p>
 
-        {/* Action Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1105,7 +1075,7 @@ const CertificateCelebration = ({ cert, windowSize, onDismiss }: CertificateCele
             className="w-full font-bold"
             style={{ background: cert.colors.accent, color: 'hsl(0,0%,5%)' }}
           >
-            View Certificate
+            {t('certificates.viewCertificate', 'View Certificate')}
           </Button>
         </motion.div>
       </div>
