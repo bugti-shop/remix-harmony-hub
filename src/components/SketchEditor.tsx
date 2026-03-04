@@ -3807,7 +3807,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
     redoStackRef.current = [];
     forceUpdate(n => n + 1);
     redrawRef.current();
-    toast('PDF closed');
+    toast(t('sketch.pdfClosed'));
   }, [pdfPages, pdfPageIndex]);
 
   // --- Color helpers ---
@@ -5548,7 +5548,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
 
               emitChangeRef.current();
               triggerHaptic('medium');
-              toast('🧹 Scribble erase', { duration: 1200 });
+              toast(`🧹 ${t('sketch.scribbleErase')}`, { duration: 1200 });
               return;
             }
           }
@@ -6013,11 +6013,11 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
           directory: Directory.Cache,
         });
         if (shareOnly) {
-          await Share.share({ title: filename, url: result.uri, dialogTitle: 'Share Sketch' });
+          await Share.share({ title: filename, url: result.uri, dialogTitle: t('sketch.shareSketch') });
         } else {
-          await Share.share({ title: filename, url: result.uri, dialogTitle: 'Save / Share' });
+          await Share.share({ title: filename, url: result.uri, dialogTitle: t('sketch.saveShare') });
         }
-        toast.success(`${filename} ready`);
+        toast.success(t('sketch.fileReady', { filename }));
       } catch (e) {
         console.error('Native save/share failed:', e);
         toast.error(t('sketch.exportFailed'));
@@ -6363,7 +6363,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
     }
 
     setIsExportingTimelapse(true);
-    toast('🎬 Exporting timelapse video...', { duration: 3000 });
+    toast(`🎬 ${t('sketch.exportingTimelapse')}`, { duration: 3000 });
 
     const savedLayers = cloneLayers(layersRef.current);
 
@@ -6528,7 +6528,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
       }
     }
     emitChange();
-    toast('Audio recording discarded');
+    toast(t('sketch.audioDiscarded'));
   }, [emitChange]);
 
   // Render canvas showing exactly the strokes that existed at `timeMs`
@@ -7678,7 +7678,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 caretColor: color,
               }}
               rows={1}
-              placeholder="Type here..."
+              placeholder={t('sketch.typeHere')}
             />
           </div>
         )}
@@ -8037,7 +8037,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             {/* Emoji Stickers */}
             {EMOJI_STICKERS.map(cat => (
               <div key={cat.category}>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-1.5">{cat.category}</p>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-1.5">{t(`sketch.emojiCategories.${cat.category.toLowerCase()}`)}</p>
                 <div className="grid grid-cols-5 gap-1">
                   {cat.emojis.map(emoji => (
                     <button
@@ -8062,7 +8062,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     key={sticker.id}
                     className="aspect-square rounded-lg border border-border/50 bg-background/80 hover:bg-primary/10 hover:border-primary/30 transition-all flex flex-col items-center justify-center p-1 active:scale-95"
                     onClick={() => handlePasteSticker(sticker)}
-                    title={sticker.name}
+                    title={t(`sketch.stickers.${sticker.id.replace('builtin-', '').replace(/-([a-z])/g, (_, c) => c.toUpperCase())}`, sticker.name)}
                   >
                     <canvas
                       className="w-full h-full"
@@ -8082,7 +8082,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                         ctx.restore();
                       }}
                     />
-                    <span className="text-[7px] text-muted-foreground truncate w-full text-center">{sticker.name}</span>
+                    <span className="text-[7px] text-muted-foreground truncate w-full text-center">{t(`sketch.stickers.${sticker.id.replace('builtin-', '').replace(/-([a-z])/g, (_, c) => c.toUpperCase())}`, sticker.name)}</span>
                   </button>
                 ))}
               </div>
@@ -8376,7 +8376,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                   : 'text-foreground/70 hover:bg-muted/80 hover:text-foreground active:scale-95'
               )}
               onClick={() => { setTool('textHighlight'); setEyedropperActive(false); }}
-              title="Highlight"
+              title={t('sketch.highlight')}
             >
               <Highlighter className="h-5 w-5" strokeWidth={tool === 'textHighlight' ? 2.5 : 1.8} />
               <span className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 rounded-full border border-card shadow-sm" style={{ backgroundColor: color }} />
@@ -8386,12 +8386,12 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <p className="text-[10px] font-semibold text-foreground mb-2">✨ {t('sketch.highlightColor')}</p>
             <div className="flex gap-2">
               {[
-                { c: '#FFEB3B', label: 'Yellow' },
-                { c: '#66BB6A', label: 'Green' },
-                { c: '#42A5F5', label: 'Blue' },
-                { c: '#EC407A', label: 'Pink' },
-                { c: '#FF7043', label: 'Orange' },
-                { c: '#AB47BC', label: 'Purple' },
+                { c: '#FFEB3B', label: t('sketch.highlightColors.yellow') },
+                { c: '#66BB6A', label: t('sketch.highlightColors.green') },
+                { c: '#42A5F5', label: t('sketch.highlightColors.blue') },
+                { c: '#EC407A', label: t('sketch.highlightColors.pink') },
+                { c: '#FF7043', label: t('sketch.highlightColors.orange') },
+                { c: '#AB47BC', label: t('sketch.highlightColors.purple') },
               ].map(({ c, label }) => (
                 <button
                   key={c}
@@ -8465,7 +8465,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 />
               ))}
             </div>
-            <p className="text-[9px] text-muted-foreground mt-2">Tap canvas to place a sticky note</p>
+            <p className="text-[9px] text-muted-foreground mt-2">{t('sketch.tapToPlaceSticky')}</p>
           </PopoverContent>
         </Popover>
 
@@ -8592,7 +8592,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                 >
                   <div className="flex items-center gap-1.5 w-full">
                     <d.icon className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={tool === d.id ? 2.5 : 1.8} />
-                    <span className="text-[10px] font-medium">{d.label}</span>
+                    <span className="text-[10px] font-medium">{t(`sketch.drawTools.${d.id}`)}</span>
                   </div>
                   <PenPreviewCanvas penType={d.id} isActive={tool === d.id} currentColor={color} />
                 </button>
@@ -8603,7 +8603,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
               <div className="mt-2.5 pt-2.5 border-t border-border/30 space-y-2">
                  <p className="text-[10px] font-semibold text-foreground/80 flex items-center gap-1">
                    <Brush className="h-3 w-3" />
-                   {t('sketch.brushSettings')} — {DRAW_TOOLS.find(d => d.id === tool)?.label}
+                   {t('sketch.brushSettings')} — {t(`sketch.drawTools.${tool}`)}
                 </p>
                 <div>
                   <div className="flex items-center justify-between mb-0.5">
@@ -8679,7 +8679,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                       ? 'bg-primary/15 text-primary scale-105'
                       : 'text-foreground/70 hover:bg-muted/80 hover:text-foreground active:scale-95'
                   )}
-                  onClick={() => { setTool(s.id); setEyedropperActive(false); setOpenToolbarPopover(null); }} title={s.label}
+                  onClick={() => { setTool(s.id); setEyedropperActive(false); setOpenToolbarPopover(null); }} title={t(`sketch.shapes.${s.id}`)}
                 >
                   <s.icon className={cn('h-5 w-5', s.id === 'line' && '-rotate-45')} strokeWidth={tool === s.id ? 2.5 : 1.8} />
                 </button>
@@ -8779,7 +8779,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     )}
                     onClick={() => setActivePaletteIdx(idx)}
                     onDoubleClick={() => { if (savedPalettes.length > 1) deletePalette(idx); }}
-                    title={`${p.name} (double-click to delete)`}
+                    title={t('sketch.doubleClickToDelete', { name: p.name })}
                   >
                     {p.name}
                   </button>
@@ -8795,7 +8795,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                       style={{ backgroundColor: c }}
                       onClick={() => applyColor(c)}
                       onContextMenu={(e) => { e.preventDefault(); removeColorFromPalette(c); }}
-                      title={`${c} (right-click to remove)`}
+                      title={t('sketch.rightClickToRemove', { color: c })}
                     />
                   ))}
                 </div>
@@ -8841,7 +8841,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <div className="grid grid-cols-4 gap-1">
               {BACKGROUNDS.map((bg) => (
                 <Button key={bg.id} variant={background === bg.id ? 'default' : 'ghost'} size="sm"
-                  className="h-8 text-[10px] px-2" onClick={() => { handleBackgroundChange(bg.id); setOpenToolbarPopover(null); }}>{bg.label}</Button>
+                  className="h-8 text-[10px] px-2" onClick={() => { handleBackgroundChange(bg.id); setOpenToolbarPopover(null); }}>{t(`sketch.backgrounds.${bg.id}`)}</Button>
               ))}
             </div>
             {background !== 'plain' && background !== 'dark' && (
@@ -8863,7 +8863,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <div className="mt-2 pt-2 border-t border-border flex items-center justify-between px-1">
               <span className="text-[10px] text-muted-foreground">{t('sketch.snapToGrid')}</span>
               <Button variant={snapEnabled ? 'default' : 'outline'} size="sm" className="h-6 text-[10px] px-2"
-                onClick={() => setSnapEnabled(!snapEnabled)}>{snapEnabled ? 'ON' : 'OFF'}</Button>
+                onClick={() => setSnapEnabled(!snapEnabled)}>{snapEnabled ? t('sketch.on') : t('sketch.off')}</Button>
             </div>
           </PopoverContent>
         </Popover>
@@ -8915,7 +8915,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                     )}
                     onClick={() => setLayerBlendMode(activeLayerId, bm.id)}
                   >
-                    {bm.label}
+                    {t(`sketch.blendModes.${bm.id}`)}
                   </button>
                 ))}
               </div>
@@ -8941,17 +8941,17 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
             <p className="text-[10px] font-medium text-foreground mb-1.5 px-1">{t('sketch.symmetryMode')}</p>
             <div className="flex flex-col gap-1">
               {([
-                { id: 'off' as const, label: 'Off', axes: 0 },
-                { id: '2' as const, label: '2 Axes', axes: 2 },
-                { id: '4' as const, label: '4 Axes', axes: 4 },
-                { id: '8' as const, label: '8 Axes (Mandala)', axes: 8 },
+                { id: 'off' as const, labelKey: 'sketch.off', axes: 0 },
+                { id: '2' as const, labelKey: 'sketch.axes2', axes: 2 },
+                { id: '4' as const, labelKey: 'sketch.axes4', axes: 4 },
+                { id: '8' as const, labelKey: 'sketch.axes8', axes: 8 },
               ]).map((s) => (
                 <Button
                   key={s.id}
                   variant={symmetryMode === s.id ? 'default' : 'ghost'}
                   size="sm"
                   className="h-8 text-xs justify-start gap-2 px-2"
-                  onClick={() => { setSymmetryMode(s.id); setOpenToolbarPopover(null); if (s.id !== 'off') toast.success(`✨ ${t('sketch.symmetryEnabled', { mode: s.label })}` ); }}
+                  onClick={() => { setSymmetryMode(s.id); setOpenToolbarPopover(null); if (s.id !== 'off') toast.success(`✨ ${t('sketch.symmetryEnabled', { mode: t(s.labelKey) })}` ); }}
                 >
                   {s.axes > 0 ? (
                     <svg className="h-3.5 w-3.5" viewBox="0 0 16 16">
@@ -8963,7 +8963,7 @@ export const SketchEditor = memo(({ initialData, onChange, onImageExport, classN
                       })}
                     </svg>
                   ) : <span className="w-3.5" />}
-                  {s.label}
+                  {t(s.labelKey)}
                 </Button>
               ))}
             </div>
