@@ -2861,5 +2861,18 @@
     "textAnnotationCreated": "टेक्स्ट एनोटेशन बनाई गई",
     "highlightedMatches": "{{count}} मैच हाइलाइट किए",
     "symmetryEnabled": "{{mode}} सममिति सक्षम"
+  },
+  "sketchVideo": {
+    "invalidYoutubeUrl": "अमान्य YouTube लिंक",
+    "showVideo": "वीडियो दिखाएं",
+    "addVideo": "वीडियो जोड़ें",
+    "video": "वीडियो",
+    "pasteYoutubeUrl": "YouTube लिंक पेस्ट करें...",
+    "add": "जोड़ें",
+    "pasteDescription": "देखते समय नोट्स लेने के लिए YouTube लिंक पेस्ट करें",
+    "bookmarkLabel": "बुकमार्क लेबल...",
+    "bookmarkAtTime": "{{time}} पर बुकमार्क",
+    "bookmarkAdded": "📌 {{time}} पर बुकमार्क जोड़ा गया",
+    "removeVideo": "वीडियो हटाएं"
   }
 }

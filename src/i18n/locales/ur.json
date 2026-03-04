@@ -2357,5 +2357,18 @@
     "textAnnotationCreated": "متن تشریح بنائی گئی",
     "highlightedMatches": "{{count}} مماثلتیں نمایاں",
     "symmetryEnabled": "{{mode}} ہم آہنگی فعال"
+  },
+  "sketchVideo": {
+    "invalidYoutubeUrl": "غلط یوٹیوب لنک",
+    "showVideo": "ویڈیو دکھائیں",
+    "addVideo": "ویڈیو شامل کریں",
+    "video": "ویڈیو",
+    "pasteYoutubeUrl": "یوٹیوب لنک پیسٹ کریں...",
+    "add": "شامل کریں",
+    "pasteDescription": "دیکھتے ہوئے نوٹس لینے کے لیے یوٹیوب لنک پیسٹ کریں",
+    "bookmarkLabel": "بُک مارک کا عنوان...",
+    "bookmarkAtTime": "{{time}} پر بُک مارک",
+    "bookmarkAdded": "📌 {{time}} پر بُک مارک شامل ہوا",
+    "removeVideo": "ویڈیو ہٹائیں"
   }
 }

@@ -2927,5 +2927,18 @@
     "textAnnotationCreated": "تم إنشاء تعليق نصي",
     "highlightedMatches": "تم تمييز {{count}} تطابق",
     "symmetryEnabled": "تم تفعيل تناظر {{mode}}"
+  },
+  "sketchVideo": {
+    "invalidYoutubeUrl": "رابط يوتيوب غير صالح",
+    "showVideo": "إظهار الفيديو",
+    "addVideo": "إضافة فيديو",
+    "video": "فيديو",
+    "pasteYoutubeUrl": "الصق رابط يوتيوب...",
+    "add": "إضافة",
+    "pasteDescription": "الصق رابط يوتيوب للتضمين وتدوين الملاحظات أثناء المشاهدة",
+    "bookmarkLabel": "عنوان الإشارة المرجعية...",
+    "bookmarkAtTime": "إشارة مرجعية عند {{time}}",
+    "bookmarkAdded": "📌 تمت إضافة إشارة مرجعية عند {{time}}",
+    "removeVideo": "إزالة الفيديو"
   }
 }

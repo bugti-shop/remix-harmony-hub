@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { X, Play, Bookmark, Clock, ChevronDown, ChevronUp, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export interface VideoBookmark {
   id: string;
@@ -40,6 +41,7 @@ export const SketchVideoPanel = memo(({
   videoUrl,
   onVideoUrlChange,
 }: SketchVideoPanelProps) => {
+  const { t } = useTranslation();
   const [view, setView] = useState<PanelView>(videoUrl ? 'player' : 'search');
   const [urlInput, setUrlInput] = useState(videoUrl);
   const [collapsed, setCollapsed] = useState(false);
@@ -110,12 +112,12 @@ export const SketchVideoPanel = memo(({
   const handleAddVideo = useCallback((url: string) => {
     const id = getYouTubeId(url);
     if (!id) {
-      toast.error('Invalid YouTube URL');
+      toast.error(t('sketchVideo.invalidYoutubeUrl'));
       return;
     }
     onVideoUrlChange(url);
     setView('player');
-  }, [onVideoUrlChange]);
+  }, [onVideoUrlChange, t]);
 
   const handleRemoveVideo = useCallback(() => {
     if (playerRef.current?.destroy) playerRef.current.destroy();
@@ -130,13 +132,13 @@ export const SketchVideoPanel = memo(({
     const newBookmark: VideoBookmark = {
       id: `bm-${Date.now()}`,
       timestamp: currentTime,
-      label: bookmarkLabel || `Bookmark at ${formatTime(currentTime)}`,
+      label: bookmarkLabel || t('sketchVideo.bookmarkAtTime', { time: formatTime(currentTime) }),
       createdAt: new Date(),
     };
     onBookmarksChange([...bookmarks, newBookmark]);
     setBookmarkLabel('');
-    toast.success(`📌 Bookmark added at ${formatTime(currentTime)}`);
-  }, [currentTime, bookmarkLabel, bookmarks, onBookmarksChange]);
+    toast.success(t('sketchVideo.bookmarkAdded', { time: formatTime(currentTime) }));
+  }, [currentTime, bookmarkLabel, bookmarks, onBookmarksChange, t]);
 
   const handleSeekToBookmark = useCallback((timestamp: number) => {
     if (playerRef.current?.seekTo) {
@@ -158,7 +160,7 @@ export const SketchVideoPanel = memo(({
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card/95 backdrop-blur-sm border border-border/50 shadow-lg text-xs font-medium hover:bg-card transition-colors"
         >
           <Video className="h-3.5 w-3.5 text-destructive" />
-          {videoId ? 'Show Video' : 'Add Video'}
+          {videoId ? t('sketchVideo.showVideo') : t('sketchVideo.addVideo')}
           <ChevronDown className="h-3 w-3" />
         </button>
       </div>
@@ -172,7 +174,7 @@ export const SketchVideoPanel = memo(({
         <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
           <div className="flex items-center gap-2">
             <Video className="h-4 w-4 text-destructive" />
-            <span className="text-xs font-semibold">Video</span>
+            <span className="text-xs font-semibold">{t('sketchVideo.video')}</span>
             {videoId && (
               <span className="text-[10px] text-muted-foreground font-mono">
                 {formatTime(currentTime)}
@@ -202,7 +204,7 @@ export const SketchVideoPanel = memo(({
             <div className="flex gap-2">
               <Input
                 type="url"
-                placeholder="Paste YouTube URL..."
+                placeholder={t('sketchVideo.pasteYoutubeUrl')}
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -216,12 +218,12 @@ export const SketchVideoPanel = memo(({
                 onClick={() => handleAddVideo(urlInput)}
                 disabled={!urlInput.trim()}
               >
-                Add
+                {t('sketchVideo.add')}
               </Button>
             </div>
 
             <p className="text-[10px] text-muted-foreground text-center">
-              Paste a YouTube URL to embed & take notes while watching
+              {t('sketchVideo.pasteDescription')}
             </p>
           </div>
         ) : (
@@ -244,7 +246,7 @@ export const SketchVideoPanel = memo(({
                   {formatTime(currentTime)}
                 </div>
                 <Input
-                  placeholder="Bookmark label..."
+                  placeholder={t('sketchVideo.bookmarkLabel')}
                   value={bookmarkLabel}
                   onChange={(e) => setBookmarkLabel(e.target.value)}
                   onKeyDown={(e) => {
@@ -259,7 +261,7 @@ export const SketchVideoPanel = memo(({
                   onClick={handleAddBookmark}
                 >
                   <Bookmark className="h-3 w-3" />
-                  Add
+                  {t('sketchVideo.add')}
                 </Button>
               </div>
 
@@ -301,7 +303,7 @@ export const SketchVideoPanel = memo(({
                   className="h-6 text-[10px] text-destructive hover:text-destructive px-2"
                   onClick={handleRemoveVideo}
                 >
-                  Remove Video
+                  {t('sketchVideo.removeVideo')}
                 </Button>
               </div>
             </div>

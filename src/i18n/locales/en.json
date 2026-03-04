@@ -3294,5 +3294,18 @@
       "symbols": "Symbols",
       "animals": "Animals"
     }
+  },
+  "sketchVideo": {
+    "invalidYoutubeUrl": "Invalid YouTube URL",
+    "showVideo": "Show Video",
+    "addVideo": "Add Video",
+    "video": "Video",
+    "pasteYoutubeUrl": "Paste YouTube URL...",
+    "add": "Add",
+    "pasteDescription": "Paste a YouTube URL to embed & take notes while watching",
+    "bookmarkLabel": "Bookmark label...",
+    "bookmarkAtTime": "Bookmark at {{time}}",
+    "bookmarkAdded": "📌 Bookmark added at {{time}}",
+    "removeVideo": "Remove Video"
   }
 }
