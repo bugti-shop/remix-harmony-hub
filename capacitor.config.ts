@@ -8,6 +8,14 @@ const config: CapacitorConfig = {
     cleartext: true
   },
   plugins: {
+    SplashScreen: {
+      launchAutoHide: true,
+      launchShowDuration: 500,
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
     SocialLogin: {
       google: {
         webClientId: '52777395492-vnlk2hkr3pv15dtpgp2m51p7418vll90.apps.googleusercontent.com',
