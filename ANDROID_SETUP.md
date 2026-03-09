@@ -126,7 +126,7 @@ Add the splash screen theme to your launch theme:
 ```xml
 <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
     <!-- Splash background color -->
-    <item name="windowSplashScreenBackground">#3a6cc9</item>
+    <item name="windowSplashScreenBackground">#3b78ed</item>
 </style>
 ```
 
