@@ -153,16 +153,8 @@ Add these to your `android/app/build.gradle`:
 **File:** `android/app/src/main/res/values/strings.xml`
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Npd</string>
-    <string name="title_activity_main">Npd</string>
-    <string name="package_name">nota.npd.com</string>
-    <string name="custom_url_scheme">nota.npd.com</string>
-    
     <!-- Google Sign-In Web Client ID -->
     <string name="server_client_id">52777395492-vnlk2hkr3pv15dtpgp2m51p7418vll90.apps.googleusercontent.com</string>
-</resources>
 ```
 
 ---
