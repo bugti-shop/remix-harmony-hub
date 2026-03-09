@@ -137,13 +137,13 @@ Add the splash screen theme to your launch theme:
 Add these to your `android/app/build.gradle`:
 
 ```gradle
-dependencies {
+
     // Google Play Billing
     implementation "com.android.billingclient:billing:7.1.1"
     
     // Android 12+ SplashScreen API (backward compatible to API 21)
     implementation "androidx.core:core-splashscreen:1.0.1"
-}
+
 ```
 
 ---
